@@ -1,0 +1,10 @@
+{
+    "autoload": {
+        "psr-4": {
+            "AuthCRED\\": "src/"
+        }
+    },
+    "require": {
+        "mehrshaddarzi/wp-trait": "^1.0"
+    }
+}
