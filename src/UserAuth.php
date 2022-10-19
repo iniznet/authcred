@@ -10,7 +10,10 @@ class UserAuth extends Model
 	use Ajax;
 
 	public $actions = [
-		'user_register' => ['sendNewPassword', 10, 1],
+		'user_register' => [
+			['sendSetupPasswordEmail', 10, 1],
+			['setAsPendingUser', 10, 1],
+		]
 	];
 
 	public $ajax = [
@@ -18,8 +21,8 @@ class UserAuth extends Model
 			'authcred_register',
 			'authcred_login' ,
 			'authcred_reset_password',
-			'authcred_reset_password_confirm',
-			'authcred_reset_password_new',
+			'authcred_confirm_reset_password',
+			'authcred_reset_new_password',
 			'authcred_logout',
 		]
 	];
@@ -97,7 +100,7 @@ class UserAuth extends Model
 		$password = wp_generate_password(12);
 		$userId = $this->user->add([
 			'username' => $username,
-			'emal' => $email,
+			'email' => $email,
 			'user_pass' => $password,
 		]);
 		
@@ -164,9 +167,9 @@ class UserAuth extends Model
 		}
 
 		# Check if username & password is correct
-		$userId = $this->user->authenticate($username, $password);
+		$user = $this->user->login($username, $password, true);
 
-		if (is_wp_error($userId)) {
+		if (is_wp_error($user)) {
 			$this->response->error([
 				'message' => [
 					'body' => __('Username or password is incorrect', 'authcred'),
@@ -263,22 +266,25 @@ class UserAuth extends Model
 		$url = get_permalink($this->findPageByShortcode('authcred', ['type' => 'forgot'])) . '#2?key=' . $token . '&username=' . rawurlencode($user->user_login);
 
 		# Send reset password email
-		$body = [
-			_x('Hi %s,', 'Hi username,', 'authcred'),
+		$subject = __('Reset Password', 'authcred');
+		
+		$body = implode('<br>', [
+			sprintf(_x('Hi %s,', 'Hi username,', 'authcred'), $user->user_login),
 			'',
 			__('Someone requested that the password be reset for the following account:', 'authcred'),
+			sprintf(_x('Username: %s', 'Username: username', 'authcred'), $user->user_login),
+			sprintf(_x('Email: %s', 'Email: email', 'authcred'), $user->user_email),
 			'',
-			__('Username: %s', 'authcred'),
-			__('Email: %s', 'authcred'),
+			__('To reset your password, visit the following address:', 'authcred'),
+			'<a href="' . $url . '">' . $url . '</a>',
 			'',
 			__('If this was a mistake, just ignore this email and nothing will happen.', 'authcred'),
-			__('To reset your password, visit the following address:', 'authcred'),
-			'',
-			'<a href="' . $url . '">' . $url . '</a>',
 			'',
 			__('Thank you,', 'authcred'),
 			get_bloginfo('name'),
-		];
+		]);
+
+		$body = apply_filters('authcred/email/reset_request_body', $body);
 
 		$headers = [
 			'Content-Type: text/html; charset=UTF-8',
@@ -294,13 +300,20 @@ class UserAuth extends Model
 
 		session_write_close();
 
-		$this->email($user->user_email, __('Password Reset', 'authcred'), implode('<br>', $body), $headers);
+		$this->email->send($subject, $body, $headers, [], $user->user_email);
+
+		# Return success response
+		$this->response->success([
+			'message' => [
+				'body' => __('Please check your email for further instructions', 'authcred'),
+			]
+		]);
 	}
 
 	# Handle reset password token code verification
-	public function authcred_reset_password_confirm()
+	public function admin_ajax_authcred_confirm_reset_password()
 	{
-		if (!$this->nonce->verify('nonce', 'authcred_reset_password_confirm')) {
+		if (!$this->nonce->verify('nonce', 'authcred_confirm_reset_password')) {
 			$this->response->error([
 				'message' => [
 					'body' => __('Invalid request', 'authcred'),
@@ -320,10 +333,10 @@ class UserAuth extends Model
 		}
 
 		# get username & token from request
-		$token = $this->request->input('token', ['trim', 'sanitize_text_field']);
+		$token = $this->request->input('reset', ['trim', 'sanitize_text_field']);
 
 		# Check if username & token is valid
-		if (!$this->request->filled('token')) {
+		if (!$this->request->filled('reset')) {
 			$this->response->error([
 				'message' => [
 					'body' => __('Token is required', 'authcred'),
@@ -337,7 +350,7 @@ class UserAuth extends Model
 			session_start();
 		}
 
-		$username = $this->session('authcred_reset_password')->get('username');
+		$username = $this->session('authcred_reset_password')->get(null, 'username');
 
 		session_write_close();
 
@@ -352,9 +365,7 @@ class UserAuth extends Model
 		}
 
 		# Check if username & token is correct
-		$username = $this->user->exists($username);
-
-		if (!$username) {
+		if (!$this->user->exists($username)) {
 			$this->response->error([
 				'message' => [
 					'body' => __('Username or token is incorrect', 'authcred'),
@@ -363,10 +374,10 @@ class UserAuth extends Model
 			exit;
 		}
 
-		$user = get_user_by('login', $username);
+		$check = check_password_reset_key($token, $username);
 
 		# Check if token is correct
-		if (!wp_check_password($token, $user->user_activation_key, $user->ID)) {
+		if (is_wp_error($check)) {
 			$this->response->error([
 				'message' => [
 					'body' => __('Username or token is incorrect', 'authcred'),
@@ -383,9 +394,9 @@ class UserAuth extends Model
 	}
 
 	# Handle reset password, set new password
-	public function admin_ajax_authcred_reset_password_new()
+	public function admin_ajax_authcred_reset_new_password()
 	{
-		if (!$this->nonce->verify('nonce', 'authcred_reset_password_new')) {
+		if (!$this->nonce->verify('nonce', 'authcred_reset_new_password')) {
 			$this->response->error([
 				'message' => [
 					'body' => __('Invalid request', 'authcred'),
@@ -407,6 +418,7 @@ class UserAuth extends Model
 		# get username & token from request
 		$password = $this->request->input('password', ['trim', 'sanitize_text_field']);
 		$confirmPassword = $this->request->input('confirm_password', ['trim', 'sanitize_text_field']);
+		$resetKey = $this->request->input('reset', ['trim', 'sanitize_text_field']);		
 
 		# Check if username & token is valid
 		if (!$this->request->filled('password')) {
@@ -443,10 +455,14 @@ class UserAuth extends Model
 			session_start();
 		}
 
-		$username = $this->session('authcred_reset_password')->get('username');
-		$token = $this->session('authcred_reset_password')->get('token');
+		$username = $this->session('authcred_reset_password')->get(null, 'username');
 
 		session_write_close();
+
+		# Check if username is empty then get from request
+		if (!$username) {
+			$username = $this->request->input('username', ['trim', 'sanitize_text_field']);
+		}
 
 		# Check if username is valid
 		if (!$username) {
@@ -458,10 +474,23 @@ class UserAuth extends Model
 			exit;
 		}
 
-		# Check if username & token is correct
-		$username = $this->user->exists($username);
+		# Check if resetKey is not empty then verify it
+		if (!empty($resetKey)) {
+			$check = check_password_reset_key($resetKey, $username);
 
-		if (!$username) {
+			# Check if token is correct
+			if (is_wp_error($check)) {
+				$this->response->error([
+					'message' => [
+						'body' => __('Username or token is incorrect', 'authcred'),
+					]
+				]);
+				exit;
+			}
+		}
+
+		# Check if username & token is correct
+		if (!$this->user->exists($username)) {
 			$this->response->error([
 				'message' => [
 					'body' => __('Username or token is incorrect', 'authcred'),
@@ -472,22 +501,21 @@ class UserAuth extends Model
 
 		$user = get_user_by('login', $username);
 
-		# Check if token is correct
-		if (!$this->password->check($token, $user->user_activation_key)) {
-			$this->response->error([
-				'message' => [
-					'body' => __('Username or token is incorrect', 'authcred'),
-				]
-			]);
-			exit;
-		}
-
 		# Update password
 		$this->password->set($password, $user->ID);
+
+		# Return success
+		$this->response->success([
+			'message' => [
+				'body' => __('Successfully updated password', 'authcred'),
+			]
+		]);
+
+		exit;
 	}
 
 	# Send first-time password request to user email
-	public function sendNewPassword($userId)
+	public function sendSetupPasswordEmail($userId)
 	{
 		# Get user data
 		$user = $this->user->get($userId);
@@ -498,11 +526,13 @@ class UserAuth extends Model
 		# Get reset password page url
 		# find page with shortcode [authcred type="forgot"]
 		$resetPageId = $this->findPageByShortcode('authcred', ['type' => 'forgot']);
-		$url = get_permalink($resetPageId) . "?key=$key&username=" . rawurlencode($user->user_login);
+		$url = get_permalink($resetPageId) . "#3?reset=$key&username=" . rawurlencode($user->user_login);
 
 		# Send email
-		$body = [
-			_x('Hi %s,', 'Hi username,', 'authcred'),
+		$subject = __('Set up your new password', 'authcred');
+
+		$body = implode('<br>', [
+			sprintf(_x('Hi %s,', 'Hi username,', 'authcred'), $user->user_login),
 			'',
 			__('Thank you for registering on our website.', 'authcred'),
 			__('Please click the link below to set your password:', 'authcred'),
@@ -512,13 +542,28 @@ class UserAuth extends Model
 			'',
 			__('Thank you,', 'authcred'),
 			get_bloginfo('name'),
-		];
+		]);
+
+		$body = apply_filters('authcred/email/setup_password_body', $body);
 
 		$headers = [
 			'Content-Type: text/html; charset=UTF-8',
 		];
 
-		$this->email($user->user_email, __('Set your password', 'authcred'), implode('<br>', $body), $headers);
+		$this->email->send($subject, $body, $headers, [], $user->user_email);
+	}
+
+	public function setAsPendingUser($userId)
+	{
+		# Set Pending Meta
+		$meta = [
+			'activated' => [
+				'value' => $this->user->can('edit_posts', $userId) ? 1 : 0,
+			],
+			'expiration' => $this->user->can('edit_posts', $userId) ? null : wp_date('U') + 172800, # 48 hours
+		];
+
+		$this->user($userId)->meta->save($this->plugin->prefix . '_registration_fields', $meta, $userId, 'user');
 	}
 
 	private function findPageByShortcode($shortcode, $attributes = [])

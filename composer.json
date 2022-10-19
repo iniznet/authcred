@@ -1,10 +1,27 @@
 {
+    "name": "iniznet/authcred",
+    "description": "Authcred is an authentication system with mycred integration.",
+    "authors": [
+        {
+            "name": "Iniznet",
+            "email": "iniznet@gmail.com",
+            "homepage": "https://niznet.my.id"
+        }
+    ],
+    "repositories": [              
+        {
+            "type": "git",
+            "url": "https://github.com/makeitworkpress/wp-custom-fields.git"
+        }             
+    ],
     "autoload": {
         "psr-4": {
             "AuthCRED\\": "src/"
         }
     },
     "require": {
-        "mehrshaddarzi/wp-trait": "^1.0"
+        "php": ">=7.4",
+        "mehrshaddarzi/wp-trait": "^1.0",
+        "makeitworkpress/wp-custom-fields": "dev-master"
     }
 }

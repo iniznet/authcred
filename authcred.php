@@ -2,7 +2,7 @@
 /**
  * Plugin Name:       AuthCRED
  * Plugin URI:        https://github.com/iniznet
- * Description:       Provide authentication pages alongside mycred integration into novel theme
+ * Description:       Provide authentication pages alongside mycred integration
  * Version:           1.0.0
  * Requires at least: 5.6
  * Requires PHP:      7.2
@@ -25,8 +25,11 @@ class AuthCRED extends \WPTrait\Plugin
 	}
 
 	public function instantiate(){
-		$this->PageAuth = new \AuthCRED\PageAuth($this->plugin);
+		$this->Admin = new \AuthCRED\Admin($this->plugin);
+		$this->AuthShortcode = new \AuthCRED\AuthShortcode($this->plugin);
 		$this->UserAuth = new \AuthCRED\UserAuth($this->plugin);
+		$this->UserFields = new \AuthCRED\Fields\UserFields($this->plugin);
+		$this->MyCRED = new \AuthCRED\MyCRED($this->plugin);
 	}
 
 	public function register_activation_hook(){}

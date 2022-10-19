@@ -7,6 +7,8 @@ const alpine = () => {
         Alpine.magic('ajax', () =>  AjaxMagic);
 
         Alpine.store('form', {
+            success: null,
+            message: {},
             step: parseInt(location.hash.substring(1).split('?')[0]) || 1,
         });
 

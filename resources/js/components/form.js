@@ -1,7 +1,17 @@
-export default (action, back = true, multiStep = false) => ({
+export default (action, back = false, multiStep = false) => ({
     loading: false,
-    success: null,
-    message: {},
+    fill: {},
+
+    init() {
+      // Prefill form inputs with data from query string
+      const hash = location.hash.substring(1);
+      const query = hash.split('?')[1];
+      const params = new URLSearchParams(query);
+
+      for (const key of params.keys()) {
+        this.fill[key] = params.get(key);
+      }
+    },
   
     async dispatch() {
       if (this.loading) {
@@ -9,7 +19,7 @@ export default (action, back = true, multiStep = false) => ({
       }
   
       this.toggle();
-      this.success = null;
+      this.$store.form.success = null;
   
       try {
         const data = new FormData(this.$el);
@@ -19,7 +29,13 @@ export default (action, back = true, multiStep = false) => ({
   
         if (response.success && back) {
           setTimeout(() => {
-            window.history.back() || window.location.replace('/');
+            if (back == true) {
+              window.history.back() || window.location.replace('/');
+            }
+
+            if (typeof back == 'string' && back != '') {
+              window.location.replace(back);
+            }
           }, 3400);
         }
   
@@ -27,7 +43,7 @@ export default (action, back = true, multiStep = false) => ({
           this.$store.form.step++;
         }
 
-        this.success = response.success;
+        this.$store.form.success = response.success;
         let message = response.data.message;
 
         if (!message.title) {
@@ -35,7 +51,7 @@ export default (action, back = true, multiStep = false) => ({
           message.body = '';
         }
 
-        this.message = message;
+        this.$store.form.message = message;
       } catch (error) {}
   
       this.toggle();

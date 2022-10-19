@@ -1,15 +1,15 @@
 <form
-	x-data="form('authcred-register')"
+	x-data="form('authcred_login', <?= $goto ?>)"
 	class="my-2 space-y-4 max-w-sm"
   @submit.prevent="dispatch"
 >
-  <div x-show="success && message" class="p-2 text-green-700 border rounded border-green-900/10 bg-green-50" x-cloak>
-    <strong x-text="message.title" class="text-sm font-medium"></strong>
-    <p x-text="message.body" class="mt-1 text-xs m-0" x-show="message.body"></p>
+  <div x-show="$store.form.success && $store.form.message" class="p-2 text-green-700 border rounded border-green-900/10 bg-green-50" x-cloak>
+    <strong x-text="$store.form.message.title" class="text-sm font-medium"></strong>
+    <p x-text="$store.form.message.body" class="mt-1 text-xs m-0" x-show="$store.form.message.body"></p>
   </div>
-  <div x-show="success === false && message" class="p-2 text-red-700 border rounded border-red-900/10 bg-red-50" x-cloak>
-    <strong x-text="message.title" class="text-sm font-medium"></strong>
-    <p x-text="message.body" class="mt-1 text-xs m-0" x-show="message.body"></p>
+  <div x-show="$store.form.success === false && $store.form.message" class="p-2 text-red-700 border rounded border-red-900/10 bg-red-50" x-cloak>
+    <strong x-text="$store.form.message.title" class="text-sm font-medium"></strong>
+    <p x-text="$store.form.message.body" class="mt-1 text-xs m-0" x-show="$store.form.message.body"></p>
   </div>
 
   <div>
@@ -38,7 +38,7 @@
 		</p>
 	</div>
 
-    <input type="hidden" name="nonce" value="<?= wp_create_nonce('authcred-login') ?>">
+    <input type="hidden" name="nonce" value="<?= wp_create_nonce('authcred_login') ?>">
     <button type="submit" class="px-2 py-1 text-sm font-medium z-10 rounded shadow dark:text-white dark:border-white"><?= __('Log In', 'authcred') ?></button>
   </div>
 </form>
