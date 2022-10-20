@@ -1,1 +1,0 @@
-<a href="<?= home_url('/logout?authcred-logout=1&goto=' . $goto) ?>"><?= __('Logout', 'authcred'); ?></a>

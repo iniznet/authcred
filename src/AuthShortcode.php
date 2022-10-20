@@ -23,6 +23,8 @@ class AuthShortcode extends Model
 
 		add_shortcode('authcred-balance', [$this, 'authcredBalance']);
 		add_shortcode('authcred', [$this, 'authcred']);
+		add_shortcode('authcred-login', [$this, 'authcredLogin']);
+		add_shortcode('authcred-logout', [$this, 'authcredLogout']);
 	}
 
 	public function navShortcodes($item)
@@ -36,7 +38,7 @@ class AuthShortcode extends Model
 			$item = do_shortcode($item);
 		}
 
-		if (strpos($item, '[authcred ') !== false) {
+		if (strpos($item, '[authcred') !== false) {
 			$item = strip_tags($item);
 
 			$item = shortcode_unautop($item);
@@ -137,5 +139,44 @@ class AuthShortcode extends Model
 		}
 
 		return __('You need to specify type of authcred shortcode', 'authcred');
+	}
+
+	public function authcredLogin($atts, $content = null)
+	{
+		if (is_user_logged_in()) {
+			return $this->authcredLogout($atts, $content);
+		}
+
+		$defaults = [
+			'id' => 0,
+		];
+
+		$args = shortcode_atts($defaults, $atts, 'authcred-login');
+		$pageLink = get_permalink($args['id']) ?: '#';
+
+		$url = sprintf('<a href="%s">%s</a>', $pageLink, __('Login', 'authcred'));
+
+		return $url;
+	}
+
+	public function authcredLogout($atts, $content = null)
+	{
+		$defaults = [
+			'goto' => null,
+		];
+
+		$args = shortcode_atts($defaults, $atts, 'authcred-logout');
+
+		if (is_numeric($args['goto'])) {
+			$args['goto'] = get_permalink($args['goto']) ?: null;
+		}
+
+		if (empty($args['goto']) || is_bool($args['goto'])) {
+			$args['goto'] = home_url();
+		}
+
+		$url = sprintf('<a href="%s">%s</a>', home_url('/logout?authcred-logout=1&goto=' . $args['goto']), __('Logout', 'authcred'));
+		
+		return $url;
 	}
 }
