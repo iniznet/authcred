@@ -19,7 +19,7 @@ class MyCRED extends Model
 
 	public function allowFutureAccess($query)
 	{
-		if (is_admin() || !$query->is_main_query()) {
+		if (is_admin() || $query->is_feed) {
 			return;
 		}
 
@@ -27,9 +27,7 @@ class MyCRED extends Model
             return;
         }
 
-		if (is_user_logged_in()) {
-			$query->set('post_status', ['publish', 'future']);
-		}
+		$query->set('post_status', ['publish', 'future']);
 	}
 
 	/**
