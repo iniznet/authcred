@@ -13,7 +13,6 @@ class AuthShortcode extends Model
 
 	public $actions = [
 		'walker_nav_menu_start_el' => ['navShortcodes', 20],
-		'widget_text' => ['widgetShortcodes', 20, 3],
 		'template_redirect' => ['logoutUser', 20],
 	];
 
@@ -33,11 +32,6 @@ class AuthShortcode extends Model
 			return $item;
 		}
 
-		if (strpos($item, '[authcred-balance') !== false) {
-			$item = shortcode_unautop($item);
-			$item = do_shortcode($item);
-		}
-
 		if (strpos($item, '[authcred') !== false) {
 			$item = strip_tags($item);
 
@@ -46,20 +40,6 @@ class AuthShortcode extends Model
 		}
 
 		return $item;
-	}
-
-	public function widgetShortcodes($text, $instance, $widget)
-	{
-		if (!function_exists('mycred_get_users_fcred')) {
-			return $text;
-		}
-
-		if (strpos($text, '[authcred-balance') !== false || strpos($text, '[authcred') !== false) {
-			$text = shortcode_unautop($text);
-			$text = do_shortcode($text);
-		}
-
-		return $text;
 	}
 
 	public function logoutUser()
@@ -81,18 +61,6 @@ class AuthShortcode extends Model
 		session_unset();
 		wp_safe_redirect($redirectTo);
 		exit;
-	}
-
-	public function authcredBalance($atts, $content = null)
-	{
-		if (!function_exists('mycred_get_users_fcred')) {
-			return '';
-		}
-
-		$defaults = [];
-		$args = shortcode_atts($defaults, $atts, 'authcred-balance');
-
-		return mycred_get_users_fcred(get_current_user_id()) ?: 0;
 	}
 
 	public function authcred($atts, $content = null)

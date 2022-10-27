@@ -8,6 +8,7 @@ module.exports = {
   content: [
     "./resources/**/*.js",
     "./templates/**/*.php",
+    "./src/**/*.php",
   ],
   theme: {
     extend: {},

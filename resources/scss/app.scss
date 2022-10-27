@@ -16,3 +16,13 @@
 
 @tailwind components;
 @tailwind utilities;
+
+.authcred-buy {
+    width: 30%;
+    @apply inline-block rounded mr-4;
+    border: #d1d5db 1px solid;
+}
+
+.authcred-buy:hover {
+    @apply border-red-500;
+}
