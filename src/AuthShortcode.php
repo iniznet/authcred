@@ -20,10 +20,10 @@ class AuthShortcode extends Model
 	{
 		parent::__construct($plugin);
 
-		add_shortcode('authcred-balance', [$this, 'authcredBalance']);
 		add_shortcode('authcred', [$this, 'authcred']);
 		add_shortcode('authcred-login', [$this, 'authcredLogin']);
 		add_shortcode('authcred-logout', [$this, 'authcredLogout']);
+		add_shortcode('authcred-user-icon', [$this, 'authcredUserIcon']);
 	}
 
 	public function navShortcodes($item)
@@ -146,5 +146,18 @@ class AuthShortcode extends Model
 		$url = sprintf('<a href="%s">%s</a>', home_url('/logout?authcred-logout=1&goto=' . $args['goto']), __('Logout', 'authcred'));
 		
 		return $url;
+	}
+
+	public function authcredUserIcon($atts, $content = null)
+	{
+		$defaults = [
+			'size' => 16,
+		];
+
+		$args = shortcode_atts($defaults, $atts, 'authcred-user-icon');
+
+		$this->add_style('authcred', $this->asset('scss/app.scss'), [], time());
+
+		return $this->view->render('partials.user-icon', $args);
 	}
 }
