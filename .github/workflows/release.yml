@@ -53,7 +53,9 @@ jobs:
           composer-options: "--ignore-platform-reqs --optimize-autoloader"
 
       - name: "Put project directory"
-        run: mkdir authcred && mv * authcred
+        run: |
+          mkdir authcred
+          mv * authcred
 
       - name: Archive project release
         uses: thedoctor0/zip-release@main
