@@ -1,0 +1,89 @@
+{
+    "_readme": [
+        "This file locks the dependencies of your project to a known state",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
+        "This file is @generated automatically"
+    ],
+    "content-hash": "1f2e50602e068e6b4cd8ddce37dd4c87",
+    "packages": [
+        {
+            "name": "makeitworkpress/wp-custom-fields",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/makeitworkpress/wp-custom-fields.git",
+                "reference": "b69e204c9f423fb7e1d0b498615ea75e7ca6fbab"
+            },
+            "require": {
+                "php": ">=5.3"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "MakeitWorkPress\\WP_Custom_Fields\\": "src"
+                }
+            },
+            "license": [
+                "GPL"
+            ],
+            "authors": [
+                {
+                    "name": "Michiel Tramper",
+                    "email": "michiel@makeitworkpress.com",
+                    "homepage": "https://www.makeitworkpress.com"
+                }
+            ],
+            "description": "WP Custom Fields allows you to add custom fields easily to options pages, post, taxonomy and usermeta and customizer fields.",
+            "homepage": "https://github.com/makeitworkpress/wp-custom-fields",
+            "time": "2022-07-13T13:03:55+00:00"
+        },
+        {
+            "name": "mehrshaddarzi/wp-trait",
+            "version": "v1.0.37",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/mehrshaddarzi/wp-trait.git",
+                "reference": "957cb029e5ad6f40c2d3372cd3dc34d38781bd15"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/mehrshaddarzi/wp-trait/zipball/957cb029e5ad6f40c2d3372cd3dc34d38781bd15",
+                "reference": "957cb029e5ad6f40c2d3372cd3dc34d38781bd15",
+                "shasum": ""
+            },
+            "require": {
+                "ext-json": "*",
+                "php": ">=7.2"
+            },
+            "type": "package",
+            "autoload": {
+                "psr-4": {
+                    "WPTrait\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "authors": [
+                {
+                    "name": "Mehrshad Darzi",
+                    "email": "mehrshad198@gmail.com",
+                    "homepage": "https://github.com/mehrshaddarzi"
+                }
+            ],
+            "description": "Easy framework for fast and standard development of WordPress plugins",
+            "time": "2022-10-03T14:01:06+00:00"
+        }
+    ],
+    "packages-dev": [],
+    "aliases": [],
+    "minimum-stability": "stable",
+    "stability-flags": {
+        "makeitworkpress/wp-custom-fields": 20
+    },
+    "prefer-stable": false,
+    "prefer-lowest": false,
+    "platform": {
+        "php": ">=7.4"
+    },
+    "platform-dev": [],
+    "plugin-api-version": "1.1.0"
+}
