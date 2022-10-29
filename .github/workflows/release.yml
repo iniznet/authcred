@@ -52,7 +52,7 @@ jobs:
         with:
           composer-options: "--ignore-platform-reqs --optimize-autoloader"
 
-      - name: "Create project directory"
+      - name: "Put project directory"
         run: mkdir authcred && mv * authcred
 
       - name: Archive project release
