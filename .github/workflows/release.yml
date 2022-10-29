@@ -24,6 +24,7 @@ jobs:
           node-version: ${{ matrix.node }}
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Setup the Node ${{ matrix.php }} environment on ${{ runner.os }}
         uses: "shivammathur/setup-php@v2"
         with:
@@ -37,6 +38,7 @@ jobs:
           path: ${{ steps.yarncache.outputs.dir }}
           key: ${{ runner.os }}-${{ matrix.node }}-yarn-${{ hashFiles('**/yarn.lock') }}
           restore-keys: ${{ runner.os }}-${{ matrix.node }}-yarn-
+
       - name: Install dependencies using Yarn
         run: yarn install --frozen-lockfile
 
@@ -44,17 +46,21 @@ jobs:
         run: |
           yarn build
           cat dist/manifest.json
+
       - name: "Composer Install"
         uses: "ramsey/composer-install@v2"
         with:
           composer-options: "--ignore-platform-reqs --optimize-autoloader"
+
+      - name: "Create project directory"
+        run: mkdir authcred && mv * authcred
 
       - name: Archive project release
         uses: thedoctor0/zip-release@main
         with:
           type: 'zip'
           filename: 'authcred-${{ github.ref_name }}.zip'
-          exclusions: '*.git* /*node_modules/* .github/*'
+          exclusions: 'authcred/*.git* authcred/node_modules/* authcred/.github/*'
 
       - name: Upload release artifact
         uses: ncipollo/release-action@v1
