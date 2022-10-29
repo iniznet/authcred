@@ -52,15 +52,14 @@ jobs:
         with:
           composer-options: "--ignore-platform-reqs --optimize-autoloader"
 
-      - name: "Put project directory"
-        run: bash scripts/put.sh
+      - name: "Cleaning project directory"
+        run: bash scripts/clean.sh
 
       - name: Archive project release
         uses: thedoctor0/zip-release@main
         with:
           type: 'zip'
           filename: 'authcred-${{ github.ref_name }}.zip'
-          exclusions: 'authcred/*.git* authcred/node_modules/* authcred/.github/*'
 
       - name: Upload release artifact
         uses: ncipollo/release-action@v1
