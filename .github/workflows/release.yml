@@ -55,7 +55,7 @@ jobs:
       - name: "Put project directory"
         run: |
           mkdir authcred
-          mv * authcred
+          mv * authcred 2> /dev/null
 
       - name: Archive project release
         uses: thedoctor0/zip-release@main
