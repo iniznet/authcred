@@ -49,14 +49,14 @@ jobs:
         with:
           composer-options: "--ignore-platform-reqs --optimize-autoloader"
 
-      - name: Archive theme release
+      - name: Archive project release
         uses: thedoctor0/zip-release@main
         with:
           type: 'zip'
           filename: 'authcred-${{ github.ref_name }}.zip'
           exclusions: '*.git* /*node_modules/* .github/*'
 
-      - name: Upload Release
+      - name: Upload release artifact
         uses: ncipollo/release-action@v1
         with:
           artifacts: 'authcred-${{ github.ref_name }}.zip'
