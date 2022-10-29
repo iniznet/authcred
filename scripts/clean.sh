@@ -2,7 +2,8 @@
 
 shopt -s extglob nullglob
 
-rm -rf scripts .github node_modules .gitignore
+rm -rf scripts .github node_modules .git .gitignore
 
 mkdir authcred
-mv !(authcred|build.sh) authcred
+mv !(authcred) authcred
+mv .editorconfig authcred
