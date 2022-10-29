@@ -1,0 +1,63 @@
+name: "release"
+
+on:
+  push:
+    tags:
+      - "*"
+
+jobs:
+  release:
+    name: "Release Build"
+    runs-on: "ubuntu-latest"
+    strategy:
+      matrix:
+        node: ["16"]
+        php: ["8.0"]
+
+    steps:
+      - name: Checkout the project
+        uses: actions/checkout@v3
+
+      - name: Setup the Node ${{ matrix.node }} environment on ${{ runner.os }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node }}
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Setup the Node ${{ matrix.php }} environment on ${{ runner.os }}
+        uses: "shivammathur/setup-php@v2"
+        with:
+          php-version: ${{ matrix.php }}
+
+      - name: Restore the Yarn cache directory
+        id: yarncache
+        run: echo "::set-output name=dir::$(yarn cache dir)"
+      - uses: actions/cache@v3
+        with:
+          path: ${{ steps.yarncache.outputs.dir }}
+          key: ${{ runner.os }}-${{ matrix.node }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: ${{ runner.os }}-${{ matrix.node }}-yarn-
+      - name: Install dependencies using Yarn
+        run: yarn install --frozen-lockfile
+
+      - name: Build and compile assets
+        run: |
+          yarn build
+          cat dist/manifest.json
+      - name: "Composer Install"
+        uses: "ramsey/composer-install@v2"
+        with:
+          composer-options: "--ignore-platform-reqs --optimize-autoloader"
+
+      - name: "Archive theme release"
+        uses: thedoctor0/zip-release@main
+        with:
+          type: 'zip'
+          filename: 'authcred-${{ github.ref_name }}.zip'
+          exclusions: '*.git* /*node_modules/* .github/*'
+
+      - name: Upload Release
+        uses: ncipollo/release-action@v1
+        with:
+          artifacts: "authcred-${{ github.ref_name }}.zip"
+          token: ${{ secrets.RELEASE_TOKEN }}

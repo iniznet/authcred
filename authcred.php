@@ -1,8 +1,8 @@
 <?php
 /**
  * Plugin Name:       AuthCRED
- * Plugin URI:        https://github.com/iniznet
- * Description:       Provide authentication pages alongside mycred integration
+ * Plugin URI:        https://github.com/iniznet/authcred
+ * Description:       Provide simple authentication alongside mycred integration with shortcodes
  * Version:           1.0.0
  * Requires at least: 5.6
  * Requires PHP:      7.2
@@ -10,7 +10,6 @@
  * Author URI:        https://niznet.my.id
  * License:           GPL v2 or later
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
- * Update URI:        https://example.com/my-plugin/
  * Text Domain:       authcred
  * Domain Path:       /languages
  */
