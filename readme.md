@@ -16,6 +16,7 @@ Upload the plugin manually to your site with WordPress Plugin Installer or FTP
 
 - [ ]  Add Option page to configure the plugin behavior
 - [ ]  Change Password shortcode
+- [ ]  Custom amount top up template shortcode
 - [ ]  Table of Contents shortcode
 - [ ]  Documentation
 - [ ]  Recaptcha security
