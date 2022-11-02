@@ -14,8 +14,12 @@ Upload the plugin manually to your site with WordPress Plugin Installer or FTP
     
 ## Todo
 
+- [ ]  Add Option page to configure the plugin behavior
+- [ ]  Change Password shortcode
+- [ ]  Table of Contents shortcode
 - [ ]  Documentation
-- [ ]  Recaptcha Security
+- [ ]  Recaptcha security
+- [ ]  Profile shortcode
 - [ ]  ?
 
 ## Contributing
