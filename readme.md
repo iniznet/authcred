@@ -21,7 +21,7 @@ Upload the plugin manually to your site with WordPress Plugin Installer or FTP
 - [ ]  Documentation
 - [ ]  Recaptcha security
 - [ ]  Profile shortcode
-- [ ]  ?
+- [ ]  Plugin Updater
 
 ## Contributing
 
