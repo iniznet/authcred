@@ -359,7 +359,7 @@ class UserAuth extends Model
 
 		# Reauthenticate user
 		$this->user->authAs($this->user->id(), true);
-		
+
 		# Return success response
 		$this->response->success([
 			'message' => [
@@ -640,9 +640,7 @@ class UserAuth extends Model
 	{
 		# Set Pending Meta
 		$meta = [
-			'activated' => [
-				'value' => $this->user->can('edit_posts', $userId) ? 1 : 0,
-			],
+			'activated' => '',
 			'expiration' => $this->user->can('edit_posts', $userId) ? null : wp_date('U') + 172800, # 48 hours
 		];
 
