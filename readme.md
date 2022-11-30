@@ -14,14 +14,7 @@ Upload the plugin manually to your site with WordPress Plugin Installer or FTP
     
 ## Todo
 
-- [x]  Plugin Updater
-- [x]  Add Option page to configure the plugin behavior
-- [ ]  Change Password shortcode
-- [ ]  Custom amount top up template shortcode
-- [ ]  Table of Contents shortcode
-- [ ]  Documentation
-- [ ]  Recaptcha security
-- [ ]  Profile shortcode
+You can find the todo list and their status in the Projects tab
 
 ## Contributing
 
