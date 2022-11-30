@@ -78,6 +78,7 @@ class CredShortcode extends Model
 			'gateway' => 'paypal-standard',
 			'ctype' => MYCRED_DEFAULT_TYPE_KEY,
 			'amount' => '',
+			'cost' => null,
 			'gift_to' => '',
 			'class' => 'authcred-buy mycred-buy-link btn btn-primary btn-lg mt-4',
 			'login'   => $settings['login'],
@@ -122,19 +123,28 @@ class CredShortcode extends Model
 
 		$mycredButton = do_shortcode(implode('', $shortcode));
 
-		if (is_user_logged_in()) {
-			$button = $this->view->render('partials.buy-button', [
-				'title' => $args['title'],
-				'description' => $content,
-				'label' => $args['btn_label'],
-			]);
-	
-			# replace the content inside the <a> tag with the content we want
-			$content = preg_replace('/(<a[^>]*>)(.*?)(<\/a>)/i', "$1$button$3", $mycredButton);
-		} else {
+		if (!is_user_logged_in()) {
 			$mycred = mycred($args['ctype']);
 			$content = sprintf('<div class="authcred-buy p-2 btn">%s</div>', $mycred->template_tags_general($args['login']));
+
+			return $content;
 		}
+		
+
+		$button = $this->view->render('partials.buy-button', [
+			'title' => $args['title'],
+			'description' => $content,
+			'label' => $args['btn_label'],
+		]);
+
+		# append rate inside href
+		if ($args['cost'] !== null) {
+			$rate = mycred_encode_values($args['cost'] / $args['amount']);
+			$mycredButton = preg_replace('/href="([^"]+)"/', 'href="$1&er_random=' . $rate . '"', $mycredButton);
+		}
+		
+		# replace the content inside the <a> tag with the button
+		$content = preg_replace('/(<a[^>]*>)(.*?)(<\/a>)/i', "$1$button$3", $mycredButton);
 
 		return $content;
 	}
@@ -176,5 +186,5 @@ class CredShortcode extends Model
 		}
 
 		return $content;
-	}	
+	}
 }
