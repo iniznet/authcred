@@ -6,7 +6,7 @@ Provide Authentication pages & system alongside mycred integration
 
 ## Requirements
 
-PHP 7.2 or later
+WordPress 5.8 or later & PHP 7.2 or later
 
 ## Installation
 
