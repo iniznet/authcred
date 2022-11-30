@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "1f2e50602e068e6b4cd8ddce37dd4c87",
+    "content-hash": "d9a0d5e4505726dcf5100253e7fe8842",
     "packages": [
         {
             "name": "makeitworkpress/wp-custom-fields",
@@ -12,7 +12,7 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/makeitworkpress/wp-custom-fields.git",
-                "reference": "b69e204c9f423fb7e1d0b498615ea75e7ca6fbab"
+                "reference": "ee338375bfe64715bd8001a8e32b5762f32f5bad"
             },
             "require": {
                 "php": ">=5.3"
@@ -35,7 +35,7 @@
             ],
             "description": "WP Custom Fields allows you to add custom fields easily to options pages, post, taxonomy and usermeta and customizer fields.",
             "homepage": "https://github.com/makeitworkpress/wp-custom-fields",
-            "time": "2022-07-13T13:03:55+00:00"
+            "time": "2022-11-17T13:22:17+00:00"
         },
         {
             "name": "mehrshaddarzi/wp-trait",
@@ -71,13 +71,71 @@
             ],
             "description": "Easy framework for fast and standard development of WordPress plugins",
             "time": "2022-10-03T14:01:06+00:00"
+        },
+        {
+            "name": "stylemixthemes/nuxy",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/StylemixThemes/nuxy.git",
+                "reference": "master"
+            },
+            "type": "library",
+            "time": "2022-11-18T06:01:40+00:00"
+        },
+        {
+            "name": "yahnis-elsts/plugin-update-checker",
+            "version": "v5.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/YahnisElsts/plugin-update-checker.git",
+                "reference": "81be284da76f12c8751b477b2a0fa44364d26f84"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/YahnisElsts/plugin-update-checker/zipball/81be284da76f12c8751b477b2a0fa44364d26f84",
+                "reference": "81be284da76f12c8751b477b2a0fa44364d26f84",
+                "shasum": ""
+            },
+            "require": {
+                "ext-json": "*",
+                "php": ">=5.6.20"
+            },
+            "type": "library",
+            "autoload": {
+                "files": [
+                    "load-v5p0.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Yahnis Elsts",
+                    "email": "whiteshadow@w-shadow.com",
+                    "homepage": "https://w-shadow.com/",
+                    "role": "Developer"
+                }
+            ],
+            "description": "A custom update checker for WordPress plugins and themes. Useful if you can't host your plugin in the official WP repository but still want it to support automatic updates.",
+            "homepage": "https://github.com/YahnisElsts/plugin-update-checker/",
+            "keywords": [
+                "automatic updates",
+                "plugin updates",
+                "theme updates",
+                "wordpress"
+            ],
+            "time": "2022-10-28T17:46:32+00:00"
         }
     ],
     "packages-dev": [],
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
-        "makeitworkpress/wp-custom-fields": 20
+        "makeitworkpress/wp-custom-fields": 20,
+        "stylemixthemes/nuxy": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,

@@ -12,16 +12,33 @@
         {
             "type": "git",
             "url": "https://github.com/makeitworkpress/wp-custom-fields.git"
-        }             
+        },
+        {
+            "type": "package",
+            "package": {
+                "name": "stylemixthemes/nuxy",
+                "version": "dev-master",
+                "source": {
+                    "url": "https://github.com/StylemixThemes/nuxy.git",
+                    "type": "git",
+                    "reference": "master"
+                }
+            }
+        }
     ],
     "autoload": {
         "psr-4": {
             "AuthCRED\\": "src/"
-        }
+        },
+        "files": [
+            "vendor/stylemixthemes/nuxy/NUXY.php"
+        ]
     },
     "require": {
         "php": ">=7.4",
         "mehrshaddarzi/wp-trait": "^1.0",
-        "makeitworkpress/wp-custom-fields": "dev-master"
+        "makeitworkpress/wp-custom-fields": "dev-master",
+        "stylemixthemes/nuxy": "dev-master",
+        "yahnis-elsts/plugin-update-checker": "^5.0"
     }
 }

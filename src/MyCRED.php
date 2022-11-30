@@ -12,18 +12,24 @@ class MyCRED extends Model
 		'mycred_run_this' => ['extendBuyTracking', 10, 1],
 	];
 
+	private $settings = [];
+	private $postType = '';
+
 	public function __construct($plugin)
 	{
 		parent::__construct($plugin);
+
+		$this->settings = $this->option($this->plugin->prefix . '_settings')->get();
+		$this->postType = isset($this->settings['post_type']) ? $this->settings['post_type'] : '';
 	}
 
 	public function allowFutureAccess($query)
 	{
-		if (is_admin() || $query->is_feed) {
+		if (!$this->postType || is_admin() || $query->is_feed) {
 			return;
 		}
 
-		if (!$query->is_main_query() || (isset($query->query_vars['post_type']) && $query->query_vars['post_type'] !== 'post')) {
+		if (!$query->is_main_query() || (isset($query->query_vars['post_type']) && $query->query_vars['post_type'] !== $this->postType)) {
             return;
         }
 
@@ -41,18 +47,7 @@ class MyCRED extends Model
 	 */
 	public function disableSaleOncePublished($newStatus, $oldStatus, $post)
 	{
-		$disableHook = false;
-
-		/**
-		 * Filters whether to disable the method
-		 * 
-		 * Return false to this hook is the recommended way to disable this method
-		 * 
-		 * @param bool $disableHook
-		 */
-		$disableHook = apply_filters('authcred/hooks/remove_mycred_disable_sale', $disableHook);
-
-		if (!$disableHook) {
+		if (!$this->postType || $post->post_type !== $this->postType) {
 			return;
 		}
 
@@ -80,7 +75,7 @@ class MyCRED extends Model
 		 * @param string $newStatus
 		 * @param string $oldStatus
 		 */
-		$mycredSellMeta = apply_filters('authcred/mycred/remove_mycred_disable_sale_meta', $mycredSellMeta, $post, $newStatus, $oldStatus);
+		$mycredSellMeta = apply_filters('authcred/mycred/sell_meta', $mycredSellMeta, $post, $newStatus, $oldStatus);
 
 		$this->post($post->ID)->meta->save('myCRED_sell_content', $mycredSellMeta, $post->ID, 'post');
 	}
