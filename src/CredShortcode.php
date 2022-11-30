@@ -21,6 +21,7 @@ class CredShortcode extends Model
 
 		add_shortcode('authcred-balance', [$this, 'authcredBalance']);
 		add_shortcode('authcred-buy', [$this, 'authcredBuy']);
+		add_shortcode('authcred-buy-dynamic', [$this, 'authcredBuyDynamic']);
 	}
 
 	public function navShortcodes($item)
@@ -137,4 +138,43 @@ class CredShortcode extends Model
 
 		return $content;
 	}
+
+	public function authcredBuyDynamic($atts, $content = null)
+	{
+		if (!function_exists('mycred_get_users_fcred')) {
+			return '';
+		}
+
+		$this->add_style('authcred', $this->asset('scss/app.scss'), [], time());
+		$this->add_script('authcred', $this->asset('js/app.js'), [], time(), true);
+
+		$settings = mycred_get_buycred_settings();
+		$defaults = [
+			'gateway' => 'paypal-standard',
+			'ctype' => MYCRED_DEFAULT_TYPE_KEY,
+			'amount' => '',
+			'gift_to' => '',
+			'class' => 'authcred-buy myCRED-buy-form mt-4',
+			'login'   => $settings['login'],
+			'title'   => '',
+			'btn_label' => '',
+		];
+
+		$args = shortcode_atts($defaults, $atts, 'authcred-buy-dynamic');
+
+		$args['nonce'] = wp_create_nonce('mycred-buy-creds');
+
+		if (is_user_logged_in()) {
+			$content = $this->view->render('buy-dynamic', [
+				'title' => $args['title'],
+				'description' => $content,
+				'label' => $args['btn_label'],
+			], $args);
+		} else {
+			$mycred = mycred($args['ctype']);
+			$content = sprintf('<div class="authcred-buy p-2 btn">%s</div>', $mycred->template_tags_general($args['login']));
+		}
+
+		return $content;
+	}	
 }

@@ -70,6 +70,7 @@ class AuthShortcode extends Model
 			'register_id' => '',
 			'forgot_id' => '',
 			'type' => '',
+			'class' => '',
 			'goto' => null,
 		];
 
@@ -96,6 +97,10 @@ class AuthShortcode extends Model
 			}
 
 			return $this->view->render('login', $args);
+		}
+
+		if ('change' === $args['type']) {
+			return $this->view->render('change', $args);
 		}
 
 		if ('logout' === $args['type']) {

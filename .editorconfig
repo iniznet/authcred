@@ -14,9 +14,6 @@ trim_trailing_whitespace = false
 [*.php]
 indent_size = 4
 
-[*.blade.php]
-indent_size = 2
-
 [templates/**.php]
 indent_size = 2
 

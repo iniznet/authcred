@@ -21,6 +21,7 @@ class UserAuth extends Model
 			'authcred_register',
 			'authcred_login' ,
 			'authcred_reset_password',
+			'authcred_change_password',
 			'authcred_confirm_reset_password',
 			'authcred_reset_new_password',
 			'authcred_logout',
@@ -188,30 +189,6 @@ class UserAuth extends Model
 		exit;
 	}
 
-	public function admin_ajax_authcred_logout()
-	{
-		# Check if user is already logged in
-		if (!$this->user->auth()) {
-			$this->response->error([
-				'message' => [
-					'body' => __('You are not logged in', 'authcred'),
-				]
-			]);
-		}
-
-		# Logout user
-		$this->user->logout();
-
-		# Return success response
-		$this->response->success([
-			'message' => [
-				'body' => __('Successfully logged out', 'authcred'),
-			]
-		]);
-
-		exit;
-	}
-
 	# Handle reset password request
 	public function admin_ajax_authcred_reset_password()
 	{
@@ -306,6 +283,87 @@ class UserAuth extends Model
 		$this->response->success([
 			'message' => [
 				'body' => __('Please check your email for further instructions', 'authcred'),
+			]
+		]);
+	}
+
+	# Handle change password request
+	public function admin_ajax_authcred_change_password()
+	{
+		if (!$this->nonce->verify('nonce', 'authcred_change_password')) {
+			$this->response->error([
+				'message' => [
+					'body' => __('Invalid request', 'authcred'),
+				]
+			]);
+			exit;
+		}
+
+		# Check if user is already logged in
+		if (!$this->user->auth()) {
+			$this->response->error([
+				'message' => [
+					'body' => __('You are not logged in', 'authcred'),
+				]
+			]);
+			exit;
+		}
+
+		# get password from request
+		$password = $this->request->input('password', ['trim', 'sanitize_text_field']);
+		$newPassword = $this->request->input('new_password', ['trim', 'sanitize_text_field']);
+		$confrimNewPassword = $this->request->input('confirm_new_password', ['trim', 'sanitize_text_field']);
+		
+		# Check if password is valid
+		if (!$this->request->filled('password')) {
+			$this->response->error([
+				'message' => [
+					'body' => __('Current password is required', 'authcred'),
+				]
+			]);
+			exit;
+		}
+
+		# Check if new password is valid
+		if (!$this->request->filled('new_password')) {
+			$this->response->error([
+				'message' => [
+					'body' => __('New password is required', 'authcred'),
+				]
+			]);
+			exit;
+		}
+
+		# Check if confirm new password is valid
+		if (!$this->request->filled('confirm_new_password') || $newPassword != $confrimNewPassword) {
+			$this->response->error([
+				'message' => [
+					'body' => __('New password does not match', 'authcred'),
+				]
+			]);
+			exit;
+		}
+
+		# Check if password is correct
+		if (!$this->password->check($password)) {
+			$this->response->error([
+				'message' => [
+					'body' => __('Current password is incorrect', 'authcred'),
+				]
+			]);
+			exit;
+		}
+
+		# Change password
+		$this->password->set($newPassword, $this->user->id());
+
+		# Reauthenticate user
+		$this->user->authAs($this->user->id(), true);
+		
+		# Return success response
+		$this->response->success([
+			'message' => [
+				'body' => __('Password changed successfully', 'authcred'),
 			]
 		]);
 	}
@@ -508,6 +566,31 @@ class UserAuth extends Model
 		$this->response->success([
 			'message' => [
 				'body' => __('Successfully updated password', 'authcred'),
+			]
+		]);
+
+		exit;
+	}
+
+	# Handle logout
+	public function admin_ajax_authcred_logout()
+	{
+		# Check if user is already logged in
+		if (!$this->user->auth()) {
+			$this->response->error([
+				'message' => [
+					'body' => __('You are not logged in', 'authcred'),
+				]
+			]);
+		}
+
+		# Logout user
+		$this->user->logout();
+
+		# Return success response
+		$this->response->success([
+			'message' => [
+				'body' => __('Successfully logged out', 'authcred'),
 			]
 		]);
 
