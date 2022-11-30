@@ -73,7 +73,7 @@ class CredShortcode extends Model
 		$this->add_style('authcred', $this->asset('scss/app.scss'), [], time());
 		$this->add_script('authcred', $this->asset('js/app.js'), [], time(), true);
 
-		$settings = mycred_get_buycred_settings();
+		$buycredSettings = mycred_get_buycred_settings();
 		$defaults = [
 			'gateway' => 'paypal-standard',
 			'ctype' => MYCRED_DEFAULT_TYPE_KEY,
@@ -81,7 +81,7 @@ class CredShortcode extends Model
 			'cost' => null,
 			'gift_to' => '',
 			'class' => 'authcred-buy mycred-buy-link btn btn-primary btn-lg mt-4',
-			'login'   => $settings['login'],
+			'login'   => $buycredSettings['login'],
 			'title'   => '',
 			'btn_label' => '',
 		];
@@ -130,7 +130,6 @@ class CredShortcode extends Model
 			return $content;
 		}
 		
-
 		$button = $this->view->render('partials.buy-button', [
 			'title' => $args['title'],
 			'description' => $content,
@@ -158,27 +157,35 @@ class CredShortcode extends Model
 		$this->add_style('authcred', $this->asset('scss/app.scss'), [], time());
 		$this->add_script('authcred', $this->asset('js/app.js'), [], time(), true);
 
-		$settings = mycred_get_buycred_settings();
+		$settings = $this->option($this->plugin->prefix . '_settings')->get();
+		$buycredSettings = mycred_get_buycred_settings();
 		$defaults = [
 			'gateway' => 'paypal-standard',
 			'ctype' => MYCRED_DEFAULT_TYPE_KEY,
 			'amount' => '',
 			'gift_to' => '',
 			'class' => 'authcred-buy myCRED-buy-form mt-4',
-			'login'   => $settings['login'],
+			'login'   => $buycredSettings['login'],
 			'title'   => '',
 			'btn_label' => '',
+			'e_rate' => '',
 		];
 
 		$args = shortcode_atts($defaults, $atts, 'authcred-buy-dynamic');
-
 		$args['nonce'] = wp_create_nonce('mycred-buy-creds');
+
+		$gateway = buycred_gateway('paypal-standard');
+		$preview = isset($settings['mycred_dynamic_calc_preview']) ? $settings['mycred_dynamic_calc_preview'] : 0;
+
 
 		if (is_user_logged_in()) {
 			$content = $this->view->render('buy-dynamic', [
 				'title' => $args['title'],
 				'description' => $content,
 				'label' => $args['btn_label'],
+				'currency' => $gateway->prefs['currency'],
+				'rate' => $gateway->prefs['exchange'][$args['ctype']],
+				'preview' => $preview,
 			], $args);
 		} else {
 			$mycred = mycred($args['ctype']);
