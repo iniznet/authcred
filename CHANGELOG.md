@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.2.6 - 2022-12-02](https://github.com/iniznet/authcred/releases/tag/v1.2.6)
+
+### Bug Fixes
+* Fix locked post return post id `?p=123` as permalink rather normal one `/2022/12/a-locked-chapter-test/`
+
 ## [1.2.5 - 2022-12-01](https://github.com/iniznet/authcred/releases/tag/v1.2.5)
 
 ### Bug Fixes
