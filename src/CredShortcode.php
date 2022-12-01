@@ -175,7 +175,7 @@ class CredShortcode extends Model
 		$args['nonce'] = wp_create_nonce('mycred-buy-creds');
 
 		$gateway = buycred_gateway('paypal-standard');
-		$preview = isset($settings['mycred_dynamic_calc_preview']) ? $settings['mycred_dynamic_calc_preview'] : 0;
+		$preview = isset($settings['topup_dynamic_calc_preview']) ? $settings['topup_dynamic_calc_preview'] : 0;
 
 
 		if (is_user_logged_in()) {

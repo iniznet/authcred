@@ -61,10 +61,10 @@ class Settings extends Model
 						],
 					]
 				],
-				'mycred' => [
-					'name' => esc_html__('myCRED', 'authcred'),
+				'topup' => [
+					'name' => esc_html__('Top Up', 'authcred'),
 					'fields' => [
-						'mycred_dynamic_calc_preview' => [
+						'topup_dynamic_calc_preview' => [
 							'type' => 'checkbox',
 							'label' => esc_html__('Dynamic Calculation Preview', 'authcred'),
 							'description' => esc_html__('Display dynamic top up calculation preview after the input field.', 'authcred'),
