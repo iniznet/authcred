@@ -156,7 +156,7 @@ class AuthShortcode extends Model
 	public function authcredUserIcon($atts, $content = null)
 	{
 		$defaults = [
-			'size' => 16,
+			'size' => 18,
 		];
 
 		$args = shortcode_atts($defaults, $atts, 'authcred-user-icon');
