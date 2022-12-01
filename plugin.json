@@ -1,6 +1,6 @@
 {
     "name" : "AuthCRED",
-    "version" : "1.2.1",
+    "version" : "1.2.2",
     "download_url" : "https://github.com/iniznet/authcred/releases/download/v1.2.1/authcred-v1.2.1.zip",
     "sections" : {
         "description" : "Provide Authentication pages & system alongside mycred integration."

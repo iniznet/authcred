@@ -10,6 +10,9 @@ module.exports = {
     "./templates/**/*.php",
     "./src/**/*.php",
   ],
+  safelist: [
+    'text-white',
+  ],
   theme: {
     extend: {},
   },
