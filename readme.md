@@ -1,6 +1,12 @@
 # AuthCRED
 
 [![GPLv2 License](https://img.shields.io/badge/License-GPL%20v2-yellow.svg)](https://opensource.org/licenses/)
+![maintained?](https://img.shields.io/badge/maintained%3F-yes-green.svg)
+![last commit](https://img.shields.io/github/last-commit/iniznet/authcred)
+![commit](https://img.shields.io/github/commit-activity/m/iniznet/authcred)
+![version](https://img.shields.io/github/v/release/iniznet/authcred)
+
+Demo | [Changelog](CHANGELOG.md) | [Wiki](https://github.com/iniznet/authcred/wiki)
 
 Provide Authentication pages & system alongside mycred integration
 
