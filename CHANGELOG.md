@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.2.1 - 2022-12-01](https://github.com/iniznet/authcred/releases/tag/v1.2.1)
+
+### Enhancements
+* Change border of buy button from red to blue in hover
+
 ## [1.2.0 - 2022-12-01](https://github.com/iniznet/authcred/releases/tag/v1.2.0)
 
 ### Enhancements
