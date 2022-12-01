@@ -57,7 +57,7 @@ class Settings extends Model
 						'disallow_admin' => [
 							'type' => 'checkbox',
 							'label' => esc_html__('Disallow Admin access', 'authcred'),
-							'description' => esc_html__('Disallow WordPress admin dashboard access for non-administrator/editor/author user by redirecting to previous/homepage. It\'s best to use a plugin that can mask admin URL instead of this.', 'authcred'),
+							'description' => esc_html__('Disallow WordPress admin dashboard access for normal users by redirecting to previous/homepage. It\'s best to combined with a plugin that can mask admin URL.', 'authcred'),
 						],
 					]
 				],
