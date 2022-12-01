@@ -14,13 +14,13 @@
 
   <div>
     <label for="username" class="relative z-0 w-full">
-      <input type="text" id="username" name="username" class="block pt-4 pb-1 px-2 border-gray-200 text-sm rounded bg-transparent border appearance-none focus:outline-none focus:ring-0 focus:border-blue-600 peer dark:text-white" placeholder=" " required />
+      <input type="text" id="username" name="username" class="block w-full pt-4 pb-1 px-2 border-gray-200 text-sm rounded bg-transparent border appearance-none focus:outline-none focus:ring-0 focus:border-blue-600 peer dark:text-white" placeholder=" " required />
       <span class="absolute text-xs duration-300 transform -translate-y-2.5 top-3 peer-focus:left-2 left-2 peer-focus:text-blue-600 peer-placeholder-shown:translate-y-0 peer-focus:text-xs peer-placeholder-shown:text-sm peer-focus:-translate-y-2.5"><?= __('Username', 'authcred') ?></span>
     </label>
   </div>
   <div>
   <label for="email" class="relative z-0 w-full">
-    <input type="email" id="email" name="email" class="block pt-4 pb-1 px-2 border-gray-200 text-sm rounded bg-transparent border appearance-none focus:outline-none focus:ring-0 focus:border-blue-600 peer dark:text-white" placeholder=" " required />
+    <input type="email" id="email" name="email" class="block w-full pt-4 pb-1 px-2 border-gray-200 text-sm rounded bg-transparent border appearance-none focus:outline-none focus:ring-0 focus:border-blue-600 peer dark:text-white" placeholder=" " required />
     <span class="absolute text-xs duration-300 transform -translate-y-2.5 top-3 peer-focus:left-2 left-2 peer-focus:text-blue-600 peer-placeholder-shown:translate-y-0 peer-focus:text-xs peer-placeholder-shown:text-sm peer-focus:-translate-y-2.5"><?= __('Email', 'authcred') ?></span>
   </label>
 </div>

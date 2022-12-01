@@ -1,6 +1,10 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.2.3 - 2022-12-01](https://github.com/iniznet/authcred/releases/tag/v1.2.3)
+### Bug Fixes
+* Fix input fields not filling the form space
+
 ## [1.2.2 - 2022-12-01](https://github.com/iniznet/authcred/releases/tag/v1.2.2)
 ### Bug Fixes
 * Fix potential underline & color issues
