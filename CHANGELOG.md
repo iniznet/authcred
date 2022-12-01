@@ -1,13 +1,16 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
-## [1.2.1 - 2022-12-01](https://github.com/iniznet/authcred/releases/tag/v1.2.1)
+## [1.2.2 - 2022-12-01](https://github.com/iniznet/authcred/releases/tag/v1.2.2)
+### Bug Fixes
+* Fix potential underline & color issues
 
+* Change border of buy button from red to blue in hover
+## [1.2.1 - 2022-12-01](https://github.com/iniznet/authcred/releases/tag/v1.2.1)
 ### Enhancements
 * Change border of buy button from red to blue in hover
 
 ## [1.2.0 - 2022-12-01](https://github.com/iniznet/authcred/releases/tag/v1.2.0)
-
 ### Enhancements
 * Change password shortcode & page
 * Custom/dynamic amount top up shortcode & page, similary to [mycred_buy_form] shortcode
@@ -15,13 +18,11 @@ All notable changes to this project will be documented in this file.
 * Change user fields library to CMB2, it's still disabled by default as it's still in development
 
 ## [1.1.0 - 2022-11-30](https://github.com/iniznet/authcred/releases/tag/v1.1.0)
-
 ### Enhancements
 * Plugin updater
 * Plugin settings page
 
 ## [1.0.0 - 2022-10-29](https://github.com/iniznet/authcred/releases/tag/v1.0.0)
-
 ### Initial Features
 
 #### Shortcodes
