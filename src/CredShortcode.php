@@ -87,6 +87,7 @@ class CredShortcode extends Model
 		];
 
 		$args = shortcode_atts($defaults, $atts, 'authcred-buy');
+		$args['btn_label'] = str_replace(['\\','$'], ['', '\$'], $args['btn_label']);
 		$shortcode = ['[mycred_buy '];
 
 		if ($args['gateway']) {
@@ -172,6 +173,8 @@ class CredShortcode extends Model
 		];
 
 		$args = shortcode_atts($defaults, $atts, 'authcred-buy-dynamic');
+
+		$args['btn_label'] = str_replace(['\\','$'], ['', '\$'], $args['btn_label']);
 		$args['nonce'] = wp_create_nonce('mycred-buy-creds');
 
 		$gateway = buycred_gateway('paypal-standard');
