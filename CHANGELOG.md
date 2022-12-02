@@ -1,7 +1,7 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
-## [1.2.8 - 2022-12-03](https://github.com/iniznet/authcred/releases/tag/v1.2.68
+## [1.2.8 - 2022-12-03](https://github.com/iniznet/authcred/releases/tag/v1.2.8)
 
 ### Bug Fixes
 * permalinks generation triggered and crash in admin screen
