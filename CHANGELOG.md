@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.2.7 - 2022-12-03](https://github.com/iniznet/authcred/releases/tag/v1.2.6)
+
+### Bug Fixes
+* Escape $/dollar sign in button label, to prevent it from being interpreted as a variable.
+
 ## [1.2.6 - 2022-12-02](https://github.com/iniznet/authcred/releases/tag/v1.2.6)
 
 ### Bug Fixes
