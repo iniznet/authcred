@@ -32,6 +32,10 @@ class Permalinks extends Model
 	{
 		global $wp_query, $wp_post_statuses;
 
+		if (is_admin()) {
+			return $isViewable;
+		}
+
 		if (!isset($this->settings['post_type']) || !count($wp_query->posts)) {
 			return $isViewable;
 		}
