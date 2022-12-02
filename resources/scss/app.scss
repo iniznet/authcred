@@ -26,3 +26,7 @@
 .authcred-buy:hover {
     @apply border-blue-500;
 }
+
+a.authcred-buy + br {
+    @apply hidden;
+}
