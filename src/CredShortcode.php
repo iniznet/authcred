@@ -15,6 +15,10 @@ class CredShortcode extends Model
 		'widget_text' => ['widgetShortcodes', 15, 3],
 	];
 
+	public $filters = [
+		'mycred_buy_args' => ['setCustomCost', 20, 2],
+	];
+
 	public function __construct($plugin)
 	{
 		parent::__construct($plugin);
@@ -50,6 +54,21 @@ class CredShortcode extends Model
 		}
 
 		return $text;
+	}
+
+	public function setCustomCost($args, $atts)
+	{
+		if (isset($atts['cost'])) {
+			$rate = $this->calculateCustomRate($atts['cost'], $atts['amount']);
+
+			if ($rate) {
+				$args['er_random'] = $rate;
+			}
+
+			unset($atts['cost']);
+		}
+
+		return $args;
 	}
 
 	public function authcredBalance($atts, $content = null)
@@ -137,9 +156,9 @@ class CredShortcode extends Model
 			'label' => $args['btn_label'],
 		]);
 
-		# append rate inside href
+		# append custom cost inside href
 		if ($args['cost'] !== null) {
-			$rate = mycred_encode_values($args['cost'] / $args['amount']);
+			$rate = $this->calculateCustomRate($args['cost'], $args['amount']);
 			$mycredButton = preg_replace('/href="([^"]+)"/', 'href="$1&er_random=' . $rate . '"', $mycredButton);
 		}
 		
@@ -196,5 +215,18 @@ class CredShortcode extends Model
 		}
 
 		return $content;
+	}
+
+	/**
+	 * Calculate custom cost into exchange rate based on given cost & amount
+	 * 
+	 * @param int $cost
+	 * @param int|float $amount
+	 * 
+	 * @return int|float
+	 */
+	private function calculateCustomRate($cost, $amount)
+	{
+		return mycred_encode_values($cost / $amount);
 	}
 }
