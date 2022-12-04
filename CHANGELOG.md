@@ -1,11 +1,17 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.3.0 - 2022-12-03](https://github.com/iniznet/authcred/releases/tag/v1.3.0)
+
+### Enhancements
+* Added table of contents shortcode, please see the wiki for more information.
+* You're now able to set a `cost` argument/parameter in the mycred built-in `mycred_buy` shortcode to set your own custom cost.
+
 ## [1.2.8 - 2022-12-03](https://github.com/iniznet/authcred/releases/tag/v1.2.8)
 
 ### Bug Fixes
-* permalinks generation triggered and crash in admin screen
-* br tag or newline between authcred buy button
+* Permalinks generation triggered and crash in admin screen
+* `br` tag or newline between authcred buy button
 
 ## [1.2.7 - 2022-12-03](https://github.com/iniznet/authcred/releases/tag/v1.2.7)
 
