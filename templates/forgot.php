@@ -17,7 +17,7 @@
 
   <div>
     <label for="username" class="relative z-0 w-full">
-      <input type="text" id="username" name="username" class="block w-full pt-4 pb-1 px-2 border-gray-200 text-sm rounded bg-transparent border appearance-none focus:outline-none focus:ring-0 focus:border-blue-600 peer dark:text-white" placeholder=" " required />
+      <input type="text" id="username" name="username" class="block w-full pt-4 pb-1 px-2 border-gray-200 text-sm rounded bg-transparent border appearance-none focus:outline-none focus:ring-0 focus:border-blue-600 peer" placeholder=" " required />
       <span class="absolute text-xs duration-300 transform -translate-y-2.5 top-3 peer-focus:left-2 left-2 peer-focus:text-blue-600 peer-placeholder-shown:translate-y-0 peer-focus:text-xs peer-placeholder-shown:text-sm peer-focus:-translate-y-2.5"><?= __('Username or email', 'authcred') ?></span>
     </label>
   </div>
@@ -31,7 +31,7 @@
     <?php endif; ?>
 
     <input type="hidden" name="nonce" value="<?= wp_create_nonce('authcred_reset_password') ?>">
-    <button type="submit" class="px-2 py-1 text-sm font-medium z-10 rounded shadow dark:text-white dark:border-white"><?= __('Request', 'authcred') ?></button>
+    <button type="submit" class="px-2 py-1 text-sm font-medium z-10 rounded shadow"><?= __('Request', 'authcred') ?></button>
   </div>
 </form>
 
@@ -68,7 +68,7 @@
     <?php endif; ?>
 
     <input type="hidden" name="nonce" value="<?= wp_create_nonce('authcred_confirm_reset_password') ?>">
-    <button type="submit" class="px-2 py-1 text-sm font-medium z-10 rounded shadow dark:text-white dark:border-white"><?= __('Verify', 'authcred') ?></button>
+    <button type="submit" class="px-2 py-1 text-sm font-medium z-10 rounded shadow"><?= __('Verify', 'authcred') ?></button>
   </div>
 </form>
 
@@ -113,6 +113,6 @@
     <input type="hidden" name="nonce" value="<?= wp_create_nonce('authcred_reset_new_password') ?>">
     <input type="hidden" name="reset" x-model="fill.reset">
     <input type="hidden" name="username" x-model="fill.username">
-    <button type="submit" class="px-2 py-1 text-sm font-medium z-10 rounded shadow dark:text-white dark:border-white"><?= __('Update', 'authcred') ?></button>
+    <button type="submit" class="px-2 py-1 text-sm font-medium z-10 rounded shadow"><?= __('Update', 'authcred') ?></button>
   </div>
 </form>

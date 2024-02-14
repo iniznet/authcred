@@ -99,7 +99,7 @@ class CredShortcode extends Model
 			'amount' => '',
 			'cost' => null,
 			'gift_to' => '',
-			'class' => 'authcred-buy mycred-buy-link btn btn-primary btn-lg mt-4 no-underline text-black dark:text-white',
+			'class' => 'authcred-buy mycred-buy-link btn btn-primary btn-lg mt-4 no-underline',
 			'login'   => $buycredSettings['login'],
 			'title'   => '',
 			'btn_label' => '',
@@ -149,7 +149,7 @@ class CredShortcode extends Model
 
 			return $content;
 		}
-		
+
 		$button = $this->view->render('partials.buy-button', [
 			'title' => $args['title'],
 			'description' => $content,
@@ -161,7 +161,7 @@ class CredShortcode extends Model
 			$rate = $this->calculateCustomRate($args['cost'], $args['amount']);
 			$mycredButton = preg_replace('/href="([^"]+)"/', 'href="$1&er_random=' . $rate . '"', $mycredButton);
 		}
-		
+
 		# replace the content inside the <a> tag with the button
 		$content = preg_replace('/(<a[^>]*>)(.*?)(<\/a>)/i', "$1$button$3", $mycredButton);
 
@@ -184,7 +184,7 @@ class CredShortcode extends Model
 			'ctype' => MYCRED_DEFAULT_TYPE_KEY,
 			'amount' => '',
 			'gift_to' => '',
-			'class' => 'authcred-buy myCRED-buy-form mt-4 no-underline text-black dark:text-white',
+			'class' => 'authcred-buy myCRED-buy-form mt-4 no-underline',
 			'login'   => $buycredSettings['login'],
 			'title'   => '',
 			'btn_label' => '',
@@ -219,10 +219,10 @@ class CredShortcode extends Model
 
 	/**
 	 * Calculate custom cost into exchange rate based on given cost & amount
-	 * 
+	 *
 	 * @param int $cost
 	 * @param int|float $amount
-	 * 
+	 *
 	 * @return int|float
 	 */
 	private function calculateCustomRate($cost, $amount)
