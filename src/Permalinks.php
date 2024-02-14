@@ -36,10 +36,10 @@ class Permalinks extends Model
 			return $isViewable;
 		}
 
-		if (!isset($this->settings['post_type']) || !count($wp_query->posts)) {
+		if (!isset($this->settings['post_type']) || !count($wp_query->posts ?? [])) {
 			return $isViewable;
 		}
-		
+
 		foreach ($wp_query->posts as $post) {
 			if ($post->post_type !== $this->settings['post_type']) {
 				continue;
@@ -57,7 +57,7 @@ class Permalinks extends Model
 			}
 
 			$wp_post_statuses['future']->protected = 0;
-			
+
 			return true;
 		}
 
