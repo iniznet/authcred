@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "7999ea906c712b4ad49b086638e03721",
+    "content-hash": "2e810cb159e6f83ab2175b9bd1f61b6a",
     "packages": [
         {
             "name": "cmb2/cmb2",
@@ -105,7 +105,7 @@
                 "reference": "master"
             },
             "type": "library",
-            "time": "2022-11-18T06:01:40+00:00"
+            "time": "2024-02-21T08:34:09+00:00"
         },
         {
             "name": "yahnis-elsts/plugin-update-checker",
