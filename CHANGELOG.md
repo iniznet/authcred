@@ -1,6 +1,12 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.3.1 - 2024-04-21](https://github.com/iniznet/authcred/releases/tag/v1.3.1)
+
+### Bug Fixes
+* Fix post counting in Permalinks
+* Fix styles in dark mode
+
 ## [1.3.0 - 2022-12-03](https://github.com/iniznet/authcred/releases/tag/v1.3.0)
 
 ### Enhancements
