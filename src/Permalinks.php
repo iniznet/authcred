@@ -7,7 +7,8 @@ use WPTrait\Model;
 class Permalinks extends Model
 {
 	public $filters = [
-		'is_post_status_viewable' => ['futurePermalink', 999],
+		'post_link' => ['futurePermalink', 1000, 3],
+		'post_type_link' => ['futurePermalink', 1000, 3],
 	];
 
 	/** @var array */
@@ -24,43 +25,34 @@ class Permalinks extends Model
 	 * Generate future permalink similar to published permalink
 	 * instead of returning post id
 	 *
-	 * @param bool $isViewable
+	 * @param string $permalink
+	 * @param \WP_Post $post
 	 *
-	 * @return bool
+	 * @return string
 	 */
-	public function futurePermalink($isViewable)
+	public function futurePermalink($permalink, $post)
 	{
-		global $wp_query, $wp_post_statuses;
+		static $done = false;
 
-		if (is_admin()) {
-			return $isViewable;
+		$postType = $post->post_type ?? get_post_type($post->ID);
+
+		if (!isset($this->settings['post_type']) || $postType !== $this->settings['post_type']) {
+			return $permalink;
 		}
 
-		if (!isset($this->settings['post_type']) || !count($wp_query->posts ?? [])) {
-			return $isViewable;
+		if ($post->post_status !== 'future') {
+			return $permalink;
 		}
 
-		foreach ($wp_query->posts as $post) {
-			if ($post->post_type !== $this->settings['post_type']) {
-				continue;
-			}
-
-			if ($post->post_status !== 'future') {
-				return $isViewable;
-			}
-
-			$wp_post_statuses['future']->protected = 1;
-			$mycredSellMeta = get_post_meta($post->ID, 'myCRED_sell_content', true);
-
-			if (!$mycredSellMeta || $mycredSellMeta['status'] === 'disabled') {
-				return $isViewable;
-			}
-
-			$wp_post_statuses['future']->protected = 0;
-
-			return true;
+		if ($done) {
+			return $permalink;
 		}
 
-		return $isViewable;
+		$done = true;
+		$post->post_status = 'publish';
+
+		$permalink = get_permalink($post);
+
+		return $permalink;
 	}
 }
