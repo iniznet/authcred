@@ -1,16 +1,14 @@
-# AuthCRED (Abandoned)
+# AuthCRED
 
 [![GPLv2 License](https://img.shields.io/badge/License-GPL%20v2-yellow.svg)](https://opensource.org/licenses/)
-![maintained?](https://img.shields.io/badge/maintained%3F-no-red.svg)
+![maintained?](https://img.shields.io/badge/maintained%3F-yes-green.svg)
 ![last commit](https://img.shields.io/github/last-commit/iniznet/authcred)
 ![downloads](https://img.shields.io/github/downloads/iniznet/authcred/total.svg)
 ![version](https://img.shields.io/github/v/release/iniznet/authcred)
 
-The plugin was abandoned with a new goal, please see my comment on [the issue 14](https://github.com/iniznet/authcred/issues/14#issuecomment-1403627053). Instead of rebranding, I'm going to make a new one so people can use this plugin while I'm creating a new one.
-
 Demo | [Changelog](CHANGELOG.md) | [Wiki](https://github.com/iniznet/authcred/wiki)
 
-Provide Authentication pages & system alongside mycred integration
+The main feature of this plugin is to provide your site ability to unlock chapters that been locked with MyCRED sell content addon. We also provide simple Authentication pages, though I recommend using a plugin that focuses on that, it's just a bonus feature because I don't know what to name this plugin are.
 
 ## Requirements
 
