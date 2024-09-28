@@ -7,7 +7,7 @@ use WPTrait\Model;
 class MyCRED extends Model
 {
 	public $actions = [
-		'pre_get_posts' => ['allowFutureAccess', 10, 1],
+		'pre_get_posts' => ['allowFutureAccess', 1000, 1],
 		'transition_post_status' => ['disableSaleOncePublished', 10, 3],
 		'mycred_run_this' => ['extendBuyTracking', 10, 1],
 	];
@@ -25,7 +25,7 @@ class MyCRED extends Model
 
 	public function allowFutureAccess($query)
 	{
-		if (!$this->postType || is_admin() || $query->is_feed) {
+		if (!$this->postType || $query->is_feed || $query->is_admin) {
 			return;
 		}
 
