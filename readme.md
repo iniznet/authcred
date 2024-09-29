@@ -8,7 +8,7 @@
 
 Demo | [Changelog](CHANGELOG.md) | [Wiki](https://github.com/iniznet/authcred/wiki)
 
-The main feature of this plugin is to provide your site ability to unlock chapters that been locked with MyCRED sell content addon. We also provide simple Authentication pages, though I recommend using a plugin that focuses on that, it's just a bonus feature because I don't know what to name this plugin are.
+The main feature of this plugin is to provide your site ability to unlock chapters that been locked with MyCRED sell content addon with some extra cosmetic features. We also provide simple Authentication pages, though I recommend using a plugin that focuses on that, it's just a bonus feature because I don't know what to name this plugin are.
 
 ## Requirements
 
