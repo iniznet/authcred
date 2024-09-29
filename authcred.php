@@ -3,7 +3,7 @@
  * Plugin Name:       AuthCRED
  * Plugin URI:        https://github.com/iniznet/authcred
  * Description:       Provide simple authentication alongside mycred integration with shortcodes
- * Version:           1.3.1
+ * Version:           1.4.0
  * Requires at least: 5.8
  * Requires PHP:      7.2
  * Author:            niznet

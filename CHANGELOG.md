@@ -1,6 +1,12 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.4.0 - 2024-09-29](https://github.com/iniznet/authcred/releases/tag/v1.4.0)
+
+### Enhancements
+* Lower `pre_get_posts` priority to 1000, to prevent conflict with other plugins and make sure people can visit the locked post without any issue.
+* Replace `is_post_status_viewable` with `post_link` and `post_type_link` filter, to display locked post permalink in the correct format as normal post.
+
 ## [1.3.1 - 2024-04-21](https://github.com/iniznet/authcred/releases/tag/v1.3.1)
 
 ### Bug Fixes
