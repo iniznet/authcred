@@ -1,6 +1,18 @@
+<?php
+$requestUsesCaptcha = !empty($captcha) && !empty($captcha_sitekey) && !empty($captcha_request_context);
+$resetUsesCaptcha = !empty($captcha) && !empty($captcha_sitekey) && !empty($captcha_reset_context);
+$requestBinding = $requestUsesCaptcha
+	? sprintf("captchaForm('authcred_reset_password', false, true, %s, %s)", wp_json_encode($captcha_request_action), wp_json_encode($captcha))
+	: "form('authcred_reset_password', false, true)";
+$resetBinding = $resetUsesCaptcha
+	? sprintf("captchaForm('authcred_reset_new_password', %s, false, %s, %s)", wp_json_encode($goto), wp_json_encode($captcha_reset_action), wp_json_encode($captcha))
+	: sprintf("form('authcred_reset_new_password', %s)", wp_json_encode($goto));
+?>
+
 <form
-  x-data="form('authcred_reset_password', false, true)"
-  class="my-2 space-y-4 max-w-sm <?= $class ?>"
+  x-data="<?= esc_attr($requestBinding) ?>"
+  class="my-2 space-y-4 max-w-sm <?= esc_attr($class) ?>"
+  :aria-busy="loading"
   @submit.prevent="dispatch"
   x-show="$store.form.step === 1"
   style="display: none"
@@ -22,22 +34,34 @@
     </label>
   </div>
 
-  <div class="flex items-center justify-between">
-    <?php if ($register_id && $permalink = get_permalink($register_id)) : ?>
-      <p class="text-sm">
-        <?= __("Don't have account?", 'authcred') ?>
-        <a class="underline" href="<?= $permalink ?>"><?= __('Register', 'authcred') ?></a>
-      </p>
-    <?php endif; ?>
+  <?php if ($requestUsesCaptcha) : ?>
+    <?php
+    $captcha_action = $captcha_request_action;
+    include __DIR__ . '/partials/captcha-widget.php';
+    ?>
+    <input type="hidden" name="captcha_context" value="<?= esc_attr($captcha_request_context) ?>">
+    <input type="hidden" name="captcha_provider" value="<?= esc_attr($captcha) ?>">
+  <?php endif; ?>
 
-    <input type="hidden" name="nonce" value="<?= wp_create_nonce('authcred_reset_password') ?>">
-    <button type="submit" class="px-2 py-1 text-sm font-medium z-10 rounded shadow"><?= __('Request', 'authcred') ?></button>
+  <div class="flex items-center gap-4">
+    <div class="text-sm">
+      <?php if ($register_id && $permalink = get_permalink($register_id)) : ?>
+        <p class="m-0">
+          <?= __("Don't have account?", 'authcred') ?>
+          <a class="underline" href="<?= esc_url($permalink) ?>"><?= __('Register', 'authcred') ?></a>
+        </p>
+      <?php endif; ?>
+    </div>
+
+    <input type="hidden" name="nonce" value="<?= esc_attr($captcha_request_nonce) ?>">
+    <button type="submit" class="ml-auto px-2 py-1 text-sm font-medium z-10 rounded shadow"><?= __('Request', 'authcred') ?></button>
   </div>
 </form>
 
 <form
   x-data="form('authcred_confirm_reset_password', false, true)"
   class="my-2 space-y-4 max-w-sm"
+  :aria-busy="loading"
   @submit.prevent="dispatch"
   style="display: none"
   x-show="$store.form.step === 2"
@@ -59,22 +83,25 @@
     </label>
   </div>
 
-  <div class="flex items-center justify-between">
-    <?php if ($register_id && $permalink = get_permalink($register_id)) : ?>
-      <p class="text-sm">
-        <?= __("Don't have account?", 'authcred') ?>
-        <a class="underline" href="<?= $permalink ?>"><?= __('Register', 'authcred') ?></a>
-      </p>
-    <?php endif; ?>
+  <div class="flex items-center gap-4">
+    <div class="text-sm">
+      <?php if ($register_id && $permalink = get_permalink($register_id)) : ?>
+        <p class="m-0">
+          <?= __("Don't have account?", 'authcred') ?>
+          <a class="underline" href="<?= esc_url($permalink) ?>"><?= __('Register', 'authcred') ?></a>
+        </p>
+      <?php endif; ?>
+    </div>
 
-    <input type="hidden" name="nonce" value="<?= wp_create_nonce('authcred_confirm_reset_password') ?>">
-    <button type="submit" class="px-2 py-1 text-sm font-medium z-10 rounded shadow"><?= __('Verify', 'authcred') ?></button>
+    <input type="hidden" name="nonce" value="<?= esc_attr(wp_create_nonce('authcred_confirm_reset_password')) ?>">
+    <button type="submit" class="ml-auto px-2 py-1 text-sm font-medium z-10 rounded shadow"><?= __('Verify', 'authcred') ?></button>
   </div>
 </form>
 
 <form
-  x-data="form('authcred_reset_new_password', <?= $goto ?>)"
+  x-data="<?= esc_attr($resetBinding) ?>"
   class="my-2 space-y-4 max-w-sm"
+  :aria-busy="loading"
   @submit.prevent="dispatch"
   style="display: none"
   x-show="$store.form.step === 3"
@@ -102,17 +129,28 @@
     </label>
   </div>
 
-  <div class="flex items-center justify-between">
-    <?php if ($register_id && $permalink = get_permalink($register_id)) : ?>
-      <p class="text-sm">
-        <?= __("Don't have account?", 'authcred') ?>
-        <a class="underline" href="<?= $permalink ?>"><?= __('Register', 'authcred') ?></a>
-      </p>
-    <?php endif; ?>
+  <?php if ($resetUsesCaptcha) : ?>
+    <?php
+    $captcha_action = $captcha_reset_action;
+    include __DIR__ . '/partials/captcha-widget.php';
+    ?>
+    <input type="hidden" name="captcha_context" value="<?= esc_attr($captcha_reset_context) ?>">
+    <input type="hidden" name="captcha_provider" value="<?= esc_attr($captcha) ?>">
+  <?php endif; ?>
 
-    <input type="hidden" name="nonce" value="<?= wp_create_nonce('authcred_reset_new_password') ?>">
+  <div class="flex items-center gap-4">
+    <div class="text-sm">
+      <?php if ($register_id && $permalink = get_permalink($register_id)) : ?>
+        <p class="m-0">
+          <?= __("Don't have account?", 'authcred') ?>
+          <a class="underline" href="<?= esc_url($permalink) ?>"><?= __('Register', 'authcred') ?></a>
+        </p>
+      <?php endif; ?>
+    </div>
+
+    <input type="hidden" name="nonce" value="<?= esc_attr($captcha_reset_nonce) ?>">
     <input type="hidden" name="reset" x-model="fill.reset">
     <input type="hidden" name="username" x-model="fill.username">
-    <button type="submit" class="px-2 py-1 text-sm font-medium z-10 rounded shadow"><?= __('Update', 'authcred') ?></button>
+    <button type="submit" class="ml-auto px-2 py-1 text-sm font-medium z-10 rounded shadow"><?= __('Update', 'authcred') ?></button>
   </div>
 </form>

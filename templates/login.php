@@ -1,13 +1,29 @@
+<?php
+$gotoValue = wp_json_encode($goto);
+$usesCaptcha = !empty($captcha) && !empty($captcha_sitekey) && !empty($captcha_context);
+$formBinding = $usesCaptcha
+	? sprintf("captchaForm('authcred_login', %s, false, %s, %s)", $gotoValue, wp_json_encode($captcha_action), wp_json_encode($captcha))
+	: sprintf("form('authcred_login', %s)", $gotoValue);
+?>
+
 <form
-  x-data="form('authcred_login', <?= $goto ?>)"
-  class="my-2 space-y-4 max-w-sm <?= $class ?>"
+  x-data="<?= esc_attr($formBinding) ?>"
+  class="my-2 space-y-4 max-w-sm <?= esc_attr($class) ?>"
+  :aria-busy="loading"
   @submit.prevent="dispatch"
 >
-  <div x-show="$store.form.success && $store.form.message" class="p-2 text-green-700 border rounded border-green-900/10 bg-green-50" x-cloak>
+  <?php if (!empty($authcred_error_message)) : ?>
+    <div class="p-2 text-red-700 border rounded border-red-900/10 bg-red-50" role="alert">
+      <strong class="text-sm font-medium"><?= __('Notice', 'authcred') ?></strong>
+      <p class="mt-1 text-xs m-0"><?= esc_html($authcred_error_message) ?></p>
+    </div>
+  <?php endif; ?>
+
+  <div x-show="$store.form.success && $store.form.message" class="p-2 text-green-700 border rounded border-green-900/10 bg-green-50" role="status" aria-live="polite" x-cloak>
     <strong x-text="$store.form.message.title" class="text-sm font-medium"></strong>
     <p x-text="$store.form.message.body" class="mt-1 text-xs m-0" x-show="$store.form.message.body"></p>
   </div>
-  <div x-show="$store.form.success === false && $store.form.message" class="p-2 text-red-700 border rounded border-red-900/10 bg-red-50" x-cloak>
+  <div x-show="$store.form.success === false && $store.form.message" class="p-2 text-red-700 border rounded border-red-900/10 bg-red-50" role="alert" aria-live="assertive" x-cloak>
     <strong x-text="$store.form.message.title" class="text-sm font-medium"></strong>
     <p x-text="$store.form.message.body" class="mt-1 text-xs m-0" x-show="$store.form.message.body"></p>
   </div>
@@ -25,20 +41,39 @@
     </label>
   </div>
 
-  <div class="flex items-start justify-between">
-    <div>
-    <?php if ($register_id && $permalink = get_permalink($register_id)) : ?>
-    <p class="text-sm">
-      <?= __("Don't have account?", 'authcred') ?>
-      <a class="underline" href="<?= $permalink ?>"><?= __('Register', 'authcred') ?></a>
-    <?php endif; ?>
-    <?php if ($forgot_id && $permalink = get_permalink($forgot_id)) : ?>
-      <a class="underline block" href="<?= $permalink ?>"><?= __('Forgot Password', 'authcred') ?></a>
-    <?php endif; ?>
-    </p>
+  <?php if ($usesCaptcha) : ?>
+    <?php include __DIR__ . '/partials/captcha-widget.php'; ?>
+    <input type="hidden" name="captcha_context" value="<?= esc_attr($captcha_context) ?>">
+    <input type="hidden" name="captcha_provider" value="<?= esc_attr($captcha) ?>">
+  <?php endif; ?>
+
+  <div class="flex items-center">
+    <input type="checkbox" id="remember_me" name="remember_me" value="1" class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 focus:ring-2" />
+    <label for="remember_me" class="ml-2 text-sm text-gray-700"><?= __('Remember me', 'authcred') ?></label>
   </div>
 
-    <input type="hidden" name="nonce" value="<?= wp_create_nonce('authcred_login') ?>">
-    <button type="submit" class="px-2 py-1 text-sm font-medium z-10 rounded shadow"><?= __('Log In', 'authcred') ?></button>
+  <div class="flex items-start gap-4">
+    <div class="space-y-1 text-sm">
+      <?php if ($register_id && $permalink = get_permalink($register_id)) : ?>
+        <p class="m-0">
+          <?= __("Don't have account?", 'authcred') ?>
+          <a class="underline" href="<?= esc_url($permalink) ?>"><?= __('Register', 'authcred') ?></a>
+        </p>
+      <?php endif; ?>
+      <?php if ($forgot_id && $permalink = get_permalink($forgot_id)) : ?>
+        <p class="m-0">
+          <a class="underline" href="<?= esc_url($permalink) ?>"><?= __('Forgot Password', 'authcred') ?></a>
+        </p>
+      <?php endif; ?>
+    </div>
+
+    <input type="hidden" name="nonce" value="<?= esc_attr($nonce_value) ?>">
+    <button type="submit" class="ml-auto px-2 py-1 text-sm font-medium z-10 rounded shadow"><?= __('Log In', 'authcred') ?></button>
   </div>
+
+  <?php if (!empty($social_enabled)) : ?>
+    <div class="mt-4 pt-4 border-t border-gray-200">
+      <?php include __DIR__ . '/partials/social-buttons.php'; ?>
+    </div>
+  <?php endif; ?>
 </form>

@@ -8,7 +8,7 @@
             "homepage": "https://niznet.my.id"
         }
     ],
-    "repositories": [              
+    "repositories": [
         {
             "type": "package",
             "package": {
@@ -31,10 +31,16 @@
             "vendor/cmb2/cmb2/init.php"
         ]
     },
+    "scripts": {
+        "test": "php tests/captcha-regression.php"
+    },
     "require": {
         "php": ">=7.4",
+        "league/oauth2-client": "2.8.1",
+        "league/oauth2-google": "^4.1",
         "mehrshaddarzi/wp-trait": "^1.0",
         "stylemixthemes/nuxy": "dev-master",
+        "wohali/oauth2-discord-new": "^1.2",
         "yahnis-elsts/plugin-update-checker": "^5.0",
         "cmb2/cmb2": "dev-master"
     }

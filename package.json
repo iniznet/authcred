@@ -1,11 +1,12 @@
 {
     "name": "authcred",
-    "version": "1.4.0",
+    "version": "1.5.0-beta.1",
     "description": "AuthCRED WP Plugin.",
     "scripts": {
         "dev": "vite",
         "build": "vite build",
-        "preview": "vite preview"
+        "preview": "vite preview",
+        "test": "php tests/captcha-regression.php"
     },
     "author": "niznet",
     "license": "ISC",

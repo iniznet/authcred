@@ -1,6 +1,21 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [Unreleased]
+
+## [1.5.0-beta.1 - 2026-03-07](https://github.com/iniznet/authcred/releases/tag/v1.5.0-beta.1)
+### Enhancements
+* Add editable profile shortcode and profile form support.
+* Add Google reCAPTCHA and Cloudflare Turnstile protection for public auth forms.
+* Add login and registration throttling keyed by IP plus identifier with configurable lockout windows.
+* Add opt-in remember me login persistence and customizable setup/reset auth emails.
+* Add myCRED locked-content teaser rendering and local avatar upload/remove support.
+* Add Google and Discord social login with verified-email account linking, callback safety checks, and no token persistence.
+
+### Testing
+* Add a non-interactive captcha regression harness and test command for auth flows.
+* Add feature-focused PHP regression harnesses for rate limiting, email templates, teaser/avatar behavior, and social login backend contracts.
+
 ## [1.4.0 - 2024-09-29](https://github.com/iniznet/authcred/releases/tag/v1.4.0)
 
 ### Enhancements

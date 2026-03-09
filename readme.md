@@ -26,6 +26,21 @@ You can find the todo list and their status in the Projects tab
 
 Contributing whether it be through PRs, reporting an issue, or suggesting an idea is encouraged and appreciated.
 
+## Hosting
+
+If you want AuthCRED on a faster and more carefully managed stack, I also offer private managed hosting for serious WordPress and PHP projects. This is not a mass-market shared hosting plan. It is a personally managed environment where I handle the server tuning, caching, updates, and day-to-day technical overhead for you.
+
+- LiteSpeed Web Server with LSCache for WordPress
+- NVMe storage with modern PHP versions and OPcache
+- Redis object caching and automated off-server backups
+- Personal performance tuning, monitoring, and server management
+
+This hosting is invite-only and best suited for people who want a stable, optimized WordPress or PHP environment without managing the infrastructure themselves.
+
+Learn more: [niznet.my.id](https://niznet.my.id/)
+
+Want to discuss your site or request access? Email [niznet@jasedi.com](mailto:niznet@jasedi.com)
+
 ## License
 
 Licensed under the [GPL2.0](https://github.com/iniznet/authcred/blob/master/LICENSE).

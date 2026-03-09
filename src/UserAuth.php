@@ -27,19 +27,28 @@ class UserAuth extends Model
 			'authcred_logout',
 		]
 	];
-	
+
 	public function __construct($plugin)
 	{
 		parent::__construct($plugin);
 	}
-	
+
 	# Register only need username & email without asking password as we will send password to user email act as a confirmation
 	public function admin_ajax_authcred_register()
 	{
-		if (!$this->nonce->verify('nonce', 'authcred_register')) {
+		if (!Captcha::verifyFormNonce('authcred_register')) {
 			$this->response->error([
 				'message' => [
 					'body' => __('Invalid request', 'authcred'),
+				]
+			]);
+			exit;
+		}
+
+		if (!Captcha::verifyRequest('authcred_register')) {
+			$this->response->error([
+				'message' => [
+					'body' => __('Security check failed. Please try again.', 'authcred'),
 				]
 			]);
 			exit;
@@ -54,10 +63,12 @@ class UserAuth extends Model
 			]);
 			exit;
 		}
-		
+
 		# get username & email from request
 		$username = $this->request->input('username', ['trim', 'sanitize_text_field']);
 		$email = $this->request->input('email', ['trim', 'sanitize_email']);
+		$identifier = $this->getRateLimitIdentifier($username, $email);
+		$ip = $this->getRequestIp();
 
 		# Check if username & email is valid
 		if (!$this->request->filled('username')) {
@@ -78,8 +89,20 @@ class UserAuth extends Model
 			exit;
 		}
 
+		$rateLimit = RateLimit::check('register', $identifier, $ip);
+
+		if ($rateLimit['blocked']) {
+			$this->sendRateLimitError($rateLimit);
+		}
+
 		# Check if username & email is already exist
 		if ($this->user->exists($username)) {
+			$rateLimit = RateLimit::record('register', $identifier, $ip);
+
+			if ($rateLimit['blocked']) {
+				$this->sendRateLimitError($rateLimit);
+			}
+
 			$this->response->error([
 				'message' => [
 					'body' => __('Username is already exist', 'authcred'),
@@ -89,6 +112,12 @@ class UserAuth extends Model
 		}
 
 		if ($this->user->exists($email)) {
+			$rateLimit = RateLimit::record('register', $identifier, $ip);
+
+			if ($rateLimit['blocked']) {
+				$this->sendRateLimitError($rateLimit);
+			}
+
 			$this->response->error([
 				'message' => [
 					'body' => __('Email is already exist', 'authcred'),
@@ -96,7 +125,7 @@ class UserAuth extends Model
 			]);
 			exit;
 		}
-		
+
 		# Create user
 		$password = wp_generate_password(12);
 		$userId = $this->user->add([
@@ -104,8 +133,14 @@ class UserAuth extends Model
 			'email' => $email,
 			'user_pass' => $password,
 		]);
-		
+
 		if ($this->error->has($userId)) {
+			$rateLimit = RateLimit::record('register', $identifier, $ip);
+
+			if ($rateLimit['blocked']) {
+				$this->sendRateLimitError($rateLimit);
+			}
+
 			$this->response->error([
 				'message' => [
 					'body' => __('Failed to create user, please try again or report', 'authcred')
@@ -113,6 +148,8 @@ class UserAuth extends Model
 			]);
 			exit;
 		}
+
+		RateLimit::clear('register', $identifier, $ip);
 
 		# Return success response
 		$this->response->success([
@@ -126,7 +163,7 @@ class UserAuth extends Model
 
 	public function admin_ajax_authcred_login()
 	{
-		if (!$this->nonce->verify('nonce', 'authcred_login')) {
+		if (!Captcha::verifyFormNonce('authcred_login')) {
 			$this->response->error([
 				'message' => [
 					'body' => __('Invalid request', 'authcred'),
@@ -134,7 +171,16 @@ class UserAuth extends Model
 			]);
 			exit;
 		}
-		
+
+		if (!Captcha::verifyRequest('authcred_login')) {
+			$this->response->error([
+				'message' => [
+					'body' => __('Security check failed. Please try again.', 'authcred'),
+				]
+			]);
+			exit;
+		}
+
 		# Check if user is already logged in
 		if ($this->user->auth()) {
 			$this->response->error([
@@ -142,11 +188,14 @@ class UserAuth extends Model
 					'body' => __('You are already logged in', 'authcred'),
 				]
 			]);
+			exit;
 		}
 
 		# get username & password from request
 		$username = $this->request->input('username', ['trim', 'sanitize_text_field']);
 		$password = $this->request->input('password', ['trim', 'sanitize_text_field']);
+		$remember = $this->shouldRememberUser();
+		$ip = $this->getRequestIp();
 
 		# Check if username & password is valid
 		if (!$this->request->filled('username')) {
@@ -167,10 +216,22 @@ class UserAuth extends Model
 			exit;
 		}
 
+		$rateLimit = RateLimit::check('login', $username, $ip);
+
+		if ($rateLimit['blocked']) {
+			$this->sendRateLimitError($rateLimit);
+		}
+
 		# Check if username & password is correct
-		$user = $this->user->login($username, $password, true);
+		$user = $this->user->login($username, $password, $remember);
 
 		if (is_wp_error($user)) {
+			$rateLimit = RateLimit::record('login', $username, $ip);
+
+			if ($rateLimit['blocked']) {
+				$this->sendRateLimitError($rateLimit);
+			}
+
 			$this->response->error([
 				'message' => [
 					'body' => __('Username or password is incorrect', 'authcred'),
@@ -178,6 +239,8 @@ class UserAuth extends Model
 			]);
 			exit;
 		}
+
+		RateLimit::clear('login', $username, $ip);
 
 		# Return success response
 		$this->response->success([
@@ -192,10 +255,19 @@ class UserAuth extends Model
 	# Handle reset password request
 	public function admin_ajax_authcred_reset_password()
 	{
-		if (!$this->nonce->verify('nonce', 'authcred_reset_password')) {
+		if (!Captcha::verifyFormNonce('authcred_reset_password')) {
 			$this->response->error([
 				'message' => [
 					'body' => __('Invalid request', 'authcred'),
+				]
+			]);
+			exit;
+		}
+
+		if (!Captcha::verifyRequest('authcred_reset_password')) {
+			$this->response->error([
+				'message' => [
+					'body' => __('Security check failed. Please try again.', 'authcred'),
 				]
 			]);
 			exit;
@@ -240,28 +312,13 @@ class UserAuth extends Model
 
 		# Generate reset password token
 		$token = get_password_reset_key($user);
-		$url = get_permalink($this->findPageByShortcode('authcred', ['type' => 'forgot'])) . '#2?key=' . $token . '&username=' . rawurlencode($user->user_login);
+		$resetPageId = $this->findPageByShortcode('authcred', ['type' => 'forgot']);
+		$url = $resetPageId
+			? get_permalink($resetPageId) . '#2?key=' . $token . '&username=' . rawurlencode($user->user_login)
+			: __('Unfortunately, the reset password page is not set up yet by admin', 'authcred');
 
 		# Send reset password email
-		$subject = __('Reset Password', 'authcred');
-		
-		$body = implode('<br>', [
-			sprintf(_x('Hi %s,', 'Hi username,', 'authcred'), $user->user_login),
-			'',
-			__('Someone requested that the password be reset for the following account:', 'authcred'),
-			sprintf(_x('Username: %s', 'Username: username', 'authcred'), $user->user_login),
-			sprintf(_x('Email: %s', 'Email: email', 'authcred'), $user->user_email),
-			'',
-			__('To reset your password, visit the following address:', 'authcred'),
-			'<a href="' . $url . '">' . $url . '</a>',
-			'',
-			__('If this was a mistake, just ignore this email and nothing will happen.', 'authcred'),
-			'',
-			__('Thank you,', 'authcred'),
-			get_bloginfo('name'),
-		]);
-
-		$body = apply_filters('authcred/email/reset_request_body', $body);
+		$emailTemplate = \AuthCRED\EmailTemplates::buildResetPassword($user->user_login, $user->user_email, $url);
 
 		$headers = [
 			'Content-Type: text/html; charset=UTF-8',
@@ -277,7 +334,7 @@ class UserAuth extends Model
 
 		session_write_close();
 
-		$this->email->send($subject, $body, $headers, [], $user->user_email);
+		$this->email->send($emailTemplate['subject'], $emailTemplate['body'], $headers, [], $user->user_email);
 
 		# Return success response
 		$this->response->success([
@@ -313,7 +370,7 @@ class UserAuth extends Model
 		$password = $this->request->input('password', ['trim', 'sanitize_text_field']);
 		$newPassword = $this->request->input('new_password', ['trim', 'sanitize_text_field']);
 		$confrimNewPassword = $this->request->input('confirm_new_password', ['trim', 'sanitize_text_field']);
-		
+
 		# Check if password is valid
 		if (!$this->request->filled('password')) {
 			$this->response->error([
@@ -454,10 +511,19 @@ class UserAuth extends Model
 	# Handle reset password, set new password
 	public function admin_ajax_authcred_reset_new_password()
 	{
-		if (!$this->nonce->verify('nonce', 'authcred_reset_new_password')) {
+		if (!Captcha::verifyFormNonce('authcred_reset_new_password')) {
 			$this->response->error([
 				'message' => [
 					'body' => __('Invalid request', 'authcred'),
+				]
+			]);
+			exit;
+		}
+
+		if (!Captcha::verifyRequest('authcred_reset_new_password')) {
+			$this->response->error([
+				'message' => [
+					'body' => __('Security check failed. Please try again.', 'authcred'),
 				]
 			]);
 			exit;
@@ -476,7 +542,7 @@ class UserAuth extends Model
 		# get username & token from request
 		$password = $this->request->input('password', ['trim', 'sanitize_text_field']);
 		$confirmPassword = $this->request->input('confirm_password', ['trim', 'sanitize_text_field']);
-		$resetKey = $this->request->input('reset', ['trim', 'sanitize_text_field']);		
+		$resetKey = $this->request->input('reset', ['trim', 'sanitize_text_field']);
 
 		# Check if username & token is valid
 		if (!$this->request->filled('password')) {
@@ -597,43 +663,66 @@ class UserAuth extends Model
 		exit;
 	}
 
+	private function getRequestIp(): string
+	{
+		return sanitize_text_field($_SERVER['REMOTE_ADDR'] ?? '');
+	}
+
+	private function getRateLimitIdentifier(string ...$values): string
+	{
+		foreach ($values as $value) {
+			$value = trim((string) $value);
+
+			if ('' !== $value) {
+				return $value;
+			}
+		}
+
+		return '';
+	}
+
+	private function sendRateLimitError(array $rateLimit): void
+	{
+		$this->response->error([
+			'message' => [
+				'body' => $rateLimit['message'],
+			],
+			'rate_limit' => $rateLimit,
+		]);
+		exit;
+	}
+
+	private function shouldRememberUser(): bool
+	{
+		$value = $this->request->input('remember_me', ['sanitize_text_field']);
+
+		return in_array((string) $value, ['1', 'true', 'on', 'yes'], true);
+	}
+
 	# Send first-time password request to user email
 	public function sendSetupPasswordEmail($userId)
 	{
 		# Get user data
 		$user = $this->user->get($userId);
-		
+
 		# Reset password key
 		$key = get_password_reset_key($user);
 
 		# Get reset password page url
 		# find page with shortcode [authcred type="forgot"]
 		$resetPageId = $this->findPageByShortcode('authcred', ['type' => 'forgot']);
-		$url = get_permalink($resetPageId) . "#3?reset=$key&username=" . rawurlencode($user->user_login);
+		$url = $resetPageId
+			? get_permalink($resetPageId) . "#3?reset=$key&username=" . rawurlencode($user->user_login)
+			: __('Unfortunately, the reset password page is not set up yet by admin', 'authcred');
 
 		# Send email
-		$subject = __('Set up your new password', 'authcred');
-
-		$body = implode('<br>', [
-			sprintf(_x('Hi %s,', 'Hi username,', 'authcred'), $user->user_login),
-			'',
-			__('Thank you for registering on our website.', 'authcred'),
-			__('Please click the link below to set your password:', 'authcred'),
-			$resetPageId ? '<a href="' . $url . '">' . $url . '</a>' : __('Unfortunately, the reset password page is not set up yet by admin', 'authcred'),
-			'',
-			__('If you did not make this request, please disregard this email. The account will automatically be deleted after 48 hours.', 'authcred'),
-			'',
-			__('Thank you,', 'authcred'),
-			get_bloginfo('name'),
-		]);
-
-		$body = apply_filters('authcred/email/setup_password_body', $body);
+		$emailTemplate = \AuthCRED\EmailTemplates::buildSetupPassword($user->user_login, $user->user_email, $url);
 
 		$headers = [
 			'Content-Type: text/html; charset=UTF-8',
 		];
 
-		$this->email->send($subject, $body, $headers, [], $user->user_email);
+		$this->email->send($emailTemplate['subject'], $emailTemplate['body'], $headers, [], $user->user_email);
 	}
 
 	public function setAsPendingUser($userId)
@@ -659,7 +748,7 @@ class UserAuth extends Model
 
 		# find page with shortcode
 		$page = $this->db->get_row("SELECT ID FROM {$this->db->posts} WHERE post_type = 'page' AND post_status = 'publish' AND $like");
-		
+
 		return $page->ID ?? 0;
 	}
 }

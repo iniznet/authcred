@@ -1,6 +1,15 @@
+<?php
+$gotoValue = wp_json_encode($goto);
+$usesCaptcha = !empty($captcha) && !empty($captcha_sitekey) && !empty($captcha_context);
+$formBinding = $usesCaptcha
+	? sprintf("captchaForm('authcred_register', %s, false, %s, %s)", $gotoValue, wp_json_encode($captcha_action), wp_json_encode($captcha))
+	: sprintf("form('authcred_register', %s)", $gotoValue);
+?>
+
 <form
-  x-data="form('authcred_register', <?= $goto ?>)"
-  class="my-2 space-y-4 max-w-sm <?= $class ?>"
+  x-data="<?= esc_attr($formBinding) ?>"
+  class="my-2 space-y-4 max-w-sm <?= esc_attr($class) ?>"
+  :aria-busy="loading"
   @submit.prevent="dispatch"
 >
   <div x-show="$store.form.success && $store.form.message" class="p-2 text-green-700 border rounded border-green-900/10 bg-green-50" x-cloak>
@@ -25,15 +34,23 @@
   </label>
 </div>
 
-  <div class="flex items-center justify-between">
-    <?php if ($login_id && $permalink = get_permalink($login_id)) : ?>
-      <p class="text-sm">
-        <?= __('Have account?', 'authcred') ?>
-        <a class="underline" href="<?= $permalink ?>"><?= __('Log In', 'authcred') ?></a>
-      </p>
+    <?php if ($usesCaptcha) : ?>
+      <?php include __DIR__ . '/partials/captcha-widget.php'; ?>
+      <input type="hidden" name="captcha_context" value="<?= esc_attr($captcha_context) ?>">
+      <input type="hidden" name="captcha_provider" value="<?= esc_attr($captcha) ?>">
     <?php endif; ?>
 
-    <input type="hidden" name="nonce" value="<?= wp_create_nonce('authcred_register') ?>">
-    <button type="submit" class="px-2 py-1 text-sm font-medium z-10 rounded shadow"><?= __('Create Account', 'authcred') ?></button>
+  <div class="flex items-center gap-4">
+    <div class="text-sm">
+      <?php if ($login_id && $permalink = get_permalink($login_id)) : ?>
+        <p class="m-0">
+          <?= __('Have account?', 'authcred') ?>
+          <a class="underline" href="<?= esc_url($permalink) ?>"><?= __('Log In', 'authcred') ?></a>
+        </p>
+      <?php endif; ?>
+    </div>
+
+    <input type="hidden" name="nonce" value="<?= esc_attr($nonce_value) ?>">
+    <button type="submit" class="ml-auto px-2 py-1 text-sm font-medium z-10 rounded shadow"><?= __('Create Account', 'authcred') ?></button>
   </div>
 </form>

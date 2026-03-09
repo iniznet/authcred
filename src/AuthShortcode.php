@@ -69,12 +69,15 @@ class AuthShortcode extends Model
 			'login_id' => '',
 			'register_id' => '',
 			'forgot_id' => '',
+			'change_id' => '',
 			'type' => '',
 			'class' => '',
 			'goto' => null,
+			'captcha' => '',
 		];
 
 		$args = shortcode_atts($defaults, $atts, 'authcred');
+		$args = $this->prepareCaptchaArgs($args);
 
 		if (is_numeric($args['goto'])) {
 			$args['goto'] = get_permalink($args['goto']) ?: null;
@@ -96,11 +99,21 @@ class AuthShortcode extends Model
 				$args['goto'] = true;
 			}
 
+			$args = $this->prepareSocialArgs($args);
+
 			return $this->view->render('login', $args);
 		}
 
 		if ('change' === $args['type']) {
 			return $this->view->render('change', $args);
+		}
+
+		if ('profile' === $args['type']) {
+			if (!is_user_logged_in()) {
+				return $this->view->render('partials.logged-out-prompt', $args);
+			}
+
+			return $this->view->render('profile', $args);
 		}
 
 		if ('logout' === $args['type']) {
@@ -112,6 +125,114 @@ class AuthShortcode extends Model
 		}
 
 		return __('You need to specify type of authcred shortcode', 'authcred');
+	}
+
+	private function prepareCaptchaArgs(array $args): array
+	{
+		$args['captcha'] = sanitize_key($args['captcha'] ?? '');
+		$args['captcha_sitekey'] = '';
+		$args['captcha_version'] = 'v3';
+		$args['nonce_value'] = '';
+		$args['captcha_action'] = '';
+		$args['captcha_context'] = '';
+		$args['captcha_request_action'] = 'forgot';
+		$args['captcha_request_nonce'] = '';
+		$args['captcha_request_context'] = '';
+		$args['captcha_reset_action'] = 'reset';
+		$args['captcha_reset_nonce'] = '';
+		$args['captcha_reset_context'] = '';
+
+		if (!in_array($args['captcha'], ['recaptcha', 'turnstile'], true)) {
+			$args['captcha'] = '';
+		}
+
+		if ('' !== $args['captcha']) {
+			$settings = get_option($this->plugin->prefix . '_settings', []);
+
+			if ('recaptcha' === $args['captcha']) {
+				$args['captcha_sitekey'] = sanitize_text_field($settings['recaptcha_site_key'] ?? '');
+				$args['captcha_version'] = in_array($settings['recaptcha_version'] ?? 'v3', ['v2_checkbox', 'v2_invisible', 'v3'], true)
+					? $settings['recaptcha_version']
+					: 'v3';
+			} else {
+				$args['captcha_sitekey'] = sanitize_text_field($settings['turnstile_site_key'] ?? '');
+			}
+
+			if ('' === $args['captcha_sitekey']) {
+				$args['captcha'] = '';
+			}
+		}
+
+		switch ($args['type']) {
+			case 'login':
+				$args['nonce_value'] = wp_create_nonce(Captcha::nonceAction('authcred_login', $args['captcha']));
+				$args['captcha_action'] = 'login';
+				$args['captcha_context'] = $this->signCaptchaContext($args['captcha'], 'authcred_login');
+				break;
+
+			case 'register':
+				$args['nonce_value'] = wp_create_nonce(Captcha::nonceAction('authcred_register', $args['captcha']));
+				$args['captcha_action'] = 'register';
+				$args['captcha_context'] = $this->signCaptchaContext($args['captcha'], 'authcred_register');
+				break;
+
+			case 'forgot':
+				$args['captcha_request_nonce'] = wp_create_nonce(Captcha::nonceAction('authcred_reset_password', $args['captcha']));
+				$args['captcha_reset_nonce'] = wp_create_nonce(Captcha::nonceAction('authcred_reset_new_password', $args['captcha']));
+				$args['captcha_request_context'] = $this->signCaptchaContext($args['captcha'], 'authcred_reset_password');
+				$args['captcha_reset_context'] = $this->signCaptchaContext($args['captcha'], 'authcred_reset_new_password');
+				break;
+
+			default:
+				$args['captcha'] = '';
+				$args['captcha_sitekey'] = '';
+				$args['captcha_version'] = 'v3';
+				break;
+		}
+
+		return $args;
+	}
+
+	private function signCaptchaContext(string $provider, string $ajaxAction): string
+	{
+		if ('' === $provider) {
+			return '';
+		}
+
+		return wp_hash('authcred_captcha_context:' . $provider . ':' . $ajaxAction);
+	}
+
+	private function prepareSocialArgs(array $args): array
+	{
+		$settings = get_option($this->plugin->prefix . '_settings', []);
+		$safeGoto = SocialAuth::sanitizeRedirectTarget($args['goto'] ?? '');
+		$errorKey = SocialAuth::normalizeErrorKey(sanitize_key(wp_unslash($_GET['authcred-error'] ?? '')));
+
+		$args['social_google_enabled'] = $this->socialProviderConfigured($settings, 'google');
+		$args['social_google_url'] = $args['social_google_enabled']
+			? add_query_arg([
+				'authcred-social' => 'google',
+				'goto' => $safeGoto,
+			], home_url('/'))
+			: '';
+		$args['social_discord_enabled'] = $this->socialProviderConfigured($settings, 'discord');
+		$args['social_discord_url'] = $args['social_discord_enabled']
+			? add_query_arg([
+				'authcred-social' => 'discord',
+				'goto' => $safeGoto,
+			], home_url('/'))
+			: '';
+		$args['social_enabled'] = $args['social_google_enabled'] || $args['social_discord_enabled'];
+		$args['authcred_error'] = $errorKey;
+		$args['authcred_error_message'] = SocialAuth::getErrorMessage($errorKey);
+
+		return $args;
+	}
+
+	private function socialProviderConfigured(array $settings, string $provider): bool
+	{
+		return '' !== sanitize_text_field($settings[$provider . '_client_id'] ?? '')
+			&& '' !== sanitize_text_field($settings[$provider . '_client_secret'] ?? '');
 	}
 
 	public function authcredLogin($atts, $content = null)
@@ -149,7 +270,7 @@ class AuthShortcode extends Model
 		}
 
 		$url = sprintf('<a href="%s">%s</a>', home_url('/logout?authcred-logout=1&goto=' . $args['goto']), __('Logout', 'authcred'));
-		
+
 		return $url;
 	}
 
