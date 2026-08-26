@@ -36,7 +36,7 @@
     },
     "require": {
         "php": ">=7.4",
-        "league/oauth2-client": "2.8.1",
+        "league/oauth2-client": "2.9.0",
         "league/oauth2-google": "^4.1",
         "mehrshaddarzi/wp-trait": "^1.0",
         "stylemixthemes/nuxy": "dev-master",
